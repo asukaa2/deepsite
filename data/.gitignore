@@ -1,0 +1,5 @@
+# User-added custom providers and custom model suggestions are persisted here
+# at runtime. Don't commit them — they're per-installation state.
+*
+!.gitignore
+!.gitkeep

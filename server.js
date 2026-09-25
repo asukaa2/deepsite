@@ -5,7 +5,14 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 
-import { PROVIDERS, PROVIDER_MODELS, resolveProvider } from "./utils/providers.js";
+import { PROVIDERS, PROVIDER_MODELS, resolveProvider, getAllProviders } from "./utils/providers.js";
+import {
+  addCustomProvider,
+  updateCustomProvider,
+  removeCustomProvider,
+  addCustomModel,
+  removeCustomModel,
+} from "./utils/customProviders.js";
 import { COLORS } from "./utils/colors.js";
 import { TEMPLATES, CDN_URLS } from "./utils/templates.js";
 import {
@@ -163,21 +170,56 @@ app.get("/api/templates/:id", (req, res) => {
 // ============================================================================
 
 app.get("/api/providers", (req, res) => {
-  const providers = Object.values(PROVIDERS).map((p) => ({
-    id: p.id,
-    name: p.name,
-    base_url: p.base_url,
-    description: p.description,
-    format: p.format,
-    no_auth_required: !!p.no_auth_required,
-    suggested_models: PROVIDER_MODELS[p.id] || [],
-    env_keys: {
-      key: p.env.key,
-      base: p.env.base,
-      model: p.env.model,
-    },
-  }));
-  return res.status(200).send({ ok: true, providers });
+  return res.status(200).send({ ok: true, providers: getAllProviders() });
+});
+
+// --- Custom provider CRUD ---
+// Add a new user-defined provider. Body: { id, name, base_url, format,
+// description, auth_header, auth_prefix, no_auth_required, suggested_models }.
+// Persisted to data/custom_providers.json.
+app.post("/api/providers/custom", (req, res) => {
+  try {
+    const p = addCustomProvider(req.body || {});
+    return res.status(200).send({ ok: true, provider: p });
+  } catch (e) {
+    return res.status(400).send({ ok: false, message: e.message });
+  }
+});
+
+// Update an existing custom provider. Body: partial provider object.
+app.put("/api/providers/custom/:id", (req, res) => {
+  try {
+    const p = updateCustomProvider(req.params.id, req.body || {});
+    return res.status(200).send({ ok: true, provider: p });
+  } catch (e) {
+    return res.status(400).send({ ok: false, message: e.message });
+  }
+});
+
+// Delete a custom provider (also clears its custom model suggestions).
+app.delete("/api/providers/custom/:id", (req, res) => {
+  const ok = removeCustomProvider(req.params.id);
+  if (!ok) {
+    return res.status(404).send({ ok: false, message: "Custom provider not found" });
+  }
+  return res.status(200).send({ ok: true });
+});
+
+// --- Per-provider custom model suggestions ---
+// Add a model name to the suggestions list for ANY provider (built-in or
+// custom). Stored in data/custom_models.json keyed by provider id.
+app.post("/api/providers/:id/models", (req, res) => {
+  const { model } = req.body || {};
+  if (!model || !String(model).trim()) {
+    return res.status(400).send({ ok: false, message: "model required" });
+  }
+  addCustomModel(req.params.id, String(model).trim());
+  return res.status(200).send({ ok: true });
+});
+
+app.delete("/api/providers/:id/models/:model", (req, res) => {
+  removeCustomModel(req.params.id, req.params.model);
+  return res.status(200).send({ ok: true });
 });
 
 // Check env configuration status — also reports provider-specific env vars

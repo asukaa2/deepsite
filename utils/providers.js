@@ -339,14 +339,22 @@ export const PROVIDER_MODELS = {
 };
 
 // Resolve the effective provider config for a request.
-// Priority: client-supplied provider_id > client-supplied base_url (auto-detect) > env
+// Priority: client-supplied provider_id (built-in OR custom) >
+//           client-supplied base_url (auto-detect) > env defaults
+//
+// Custom providers come from utils/customProviders.js (persisted to disk).
+import {
+  listCustomProviders,
+  listCustomModels,
+} from "./customProviders.js";
+
 export function resolveProvider({
   provider_id,
   api_key,
   base_url,
   model,
 }) {
-  // 1. Provider explicitly specified
+  // 1. Built-in provider explicitly specified
   if (provider_id && PROVIDERS[provider_id]) {
     const p = PROVIDERS[provider_id];
     const envKey = process.env[p.env.key] || "";
@@ -358,6 +366,19 @@ export function resolveProvider({
       baseUrl: base_url || envBase,
       model: model || envModel,
     };
+  }
+
+  // 1b. Custom provider explicitly specified
+  if (provider_id) {
+    const custom = listCustomProviders().find((p) => p.id === provider_id);
+    if (custom) {
+      return {
+        provider: custom,
+        apiKey: api_key || "",
+        baseUrl: base_url || custom.base_url,
+        model: model || (custom.suggested_models?.[0] ?? ""),
+      };
+    }
   }
 
   // 2. Auto-detect by base_url pattern
@@ -383,4 +404,40 @@ export function resolveProvider({
     baseUrl: base_url || process.env.OPENAI_BASE_URL || openai.base_url,
     model: model || process.env.OPENAI_MODEL || PROVIDER_MODELS.openai[0],
   };
+}
+
+// Build the unified provider list returned by GET /api/providers.
+// Merges built-in + custom, and overlays per-provider custom model suggestions.
+export function getAllProviders() {
+  const customModelsMap = listCustomModels();
+  const builtIn = Object.values(PROVIDERS).map((p) => ({
+    id: p.id,
+    name: p.name,
+    base_url: p.base_url,
+    description: p.description,
+    format: p.format,
+    no_auth_required: !!p.no_auth_required,
+    suggested_models: [
+      ...(PROVIDER_MODELS[p.id] || []),
+      ...(customModelsMap[p.id] || []),
+    ],
+    env_keys: { key: p.env.key, base: p.env.base, model: p.env.model },
+    custom: false,
+  }));
+  const custom = listCustomProviders().map((p) => ({
+    id: p.id,
+    name: p.name,
+    base_url: p.base_url,
+    description: p.description,
+    format: p.format,
+    no_auth_required: !!p.no_auth_required,
+    suggested_models: [
+      ...(p.suggested_models || []),
+      ...(customModelsMap[p.id] || []),
+    ],
+    auth_header: p.auth_header,
+    auth_prefix: p.auth_prefix,
+    custom: true,
+  }));
+  return [...builtIn, ...custom];
 }
