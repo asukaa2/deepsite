@@ -1,9 +1,152 @@
 @import "tailwindcss";
 
 * {
-  font-family: "Noto Sans";
+  font-family: "Noto Sans", system-ui, -apple-system, sans-serif;
 }
 
 .font-code {
-  font-family: "Source Code Pro";
+  font-family: "Source Code Pro", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ===== VSCode-like scrollbars ===== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #3e3e42;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4e4e57;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ===== chat.deepseek.com-like chat bubbles ===== */
+.chat-bubble {
+  position: relative;
+  border-radius: 14px;
+  padding: 10px 14px;
+  line-height: 1.6;
+  word-break: break-word;
+  white-space: pre-wrap;
+  font-size: 14px;
+}
+.chat-bubble-user {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  color: #fff;
+  align-self: flex-end;
+  max-width: 75%;
+  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.25);
+}
+.chat-bubble-assistant {
+  background: #1f2937;
+  color: #e5e7eb;
+  align-self: flex-start;
+  max-width: 90%;
+  border: 1px solid #374151;
+}
+
+/* typing cursor */
+.chat-cursor::after {
+  content: '▋';
+  display: inline-block;
+  animation: blink 1s steps(2, start) infinite;
+  color: #6366f1;
+  margin-left: 1px;
+}
+@keyframes blink {
+  to { visibility: hidden; }
+}
+
+/* fade-in for new chat messages */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.25s ease-out;
+}
+
+/* activity-bar icon button */
+.activity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-left: 2px solid transparent;
+  color: #858585;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.activity-icon:hover {
+  color: #fff;
+}
+.activity-icon.active {
+  color: #fff;
+  border-left-color: #6366f1;
+  background: rgba(255,255,255,0.04);
+}
+
+/* sidebar panel header */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #bbbbbb;
+  font-weight: 600;
+}
+
+/* subtle horizontal divider */
+.divider {
+  height: 1px;
+  background: #2d2d30;
+}
+
+/* tree row */
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  font-size: 13px;
+  color: #cccccc;
+  cursor: pointer;
+  border-radius: 3px;
+  user-select: none;
+}
+.tree-row:hover {
+  background: rgba(255,255,255,0.05);
+}
+.tree-row.active {
+  background: rgba(99, 102, 241, 0.18);
+  color: #fff;
+}
+
+/* tool-event chip */
+.tool-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #2d3748;
+  border: 1px solid #4a5568;
+  color: #a0aec0;
+  margin: 2px 0;
 }

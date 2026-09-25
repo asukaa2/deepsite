@@ -8,11 +8,112 @@
     "resetTooltip": "Reset Editor",
     "modelNotConfigured": "Model Not Configured"
   },
+  "sidebar": {
+    "explorer": "Explorer",
+    "providers": "Providers",
+    "mcp": "MCP Servers",
+    "skills": "Skills",
+    "cloner": "Website Cloner",
+    "settings": "Settings",
+    "search": "Search",
+    "welcome": "WELCOME",
+    "openFile": "Open File",
+    "newFile": "New File"
+  },
+  "providers": {
+    "title": "AI Providers",
+    "current": "Current Provider",
+    "apiKey": "API Key",
+    "apiKeyPlaceholder": "Enter API key",
+    "baseUrl": "Base URL",
+    "model": "Model",
+    "modelPlaceholder": "Model name",
+    "test": "Test Connection",
+    "testing": "Testing...",
+    "testOk": "Connection OK",
+    "testFail": "Connection failed",
+    "saved": "Saved",
+    "selectProvider": "Select provider",
+    "noAuthRequired": "No auth required (local)"
+  },
+  "mcp": {
+    "title": "MCP Servers",
+    "addServer": "Add Server",
+    "addStdio": "Add stdio server",
+    "addHttp": "Add HTTP server",
+    "command": "Command",
+    "args": "Arguments (comma-separated)",
+    "env": "Environment (key=value, one per line)",
+    "url": "Server URL",
+    "headers": "Headers (key: value, one per line)",
+    "save": "Save",
+    "remove": "Remove",
+    "status": {
+      "ready": "Ready",
+      "connecting": "Connecting...",
+      "error": "Error",
+      "disconnected": "Disconnected"
+    },
+    "tools": "Tools",
+    "noTools": "No tools",
+    "enableTool": "Enable",
+    "disableTool": "Disable",
+    "noServers": "No MCP servers configured. Add one to enable tool-use."
+  },
+  "skills": {
+    "title": "Skills",
+    "active": "Active skills",
+    "available": "Available skills",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "addCustom": "Add custom skill",
+    "skillName": "Skill name",
+    "skillPrompt": "Skill prompt (injected into system prompt)",
+    "skillDescription": "Short description",
+    "save": "Save",
+    "delete": "Delete",
+    "none": "No skills activated"
+  },
+  "cloner": {
+    "title": "Website Cloner",
+    "url": "Website URL",
+    "urlPlaceholder": "https://example.com",
+    "fetchSkeleton": "Fetch Skeleton",
+    "clone": "Clone & Generate",
+    "fetching": "Fetching...",
+    "cloning": "Cloning...",
+    "previewSkeleton": "Skeleton Preview",
+    "title_field": "Page Title",
+    "sections": "Sections",
+    "colors": "Color palette",
+    "fonts": "Fonts",
+    "images": "Images",
+    "links": "Links",
+    "fetchFailed": "Failed to fetch URL",
+    "fetchOk": "Fetched skeleton successfully"
+  },
+  "chat": {
+    "placeholder": "Describe the page you want to build. Shift+Enter for newline.",
+    "send": "Send",
+    "stop": "Stop",
+    "newChat": "New chat",
+    "thinking": "Thinking...",
+    "tools": "Tools",
+    "skills": "Skills",
+    "provider": "Provider",
+    "regenerate": "Regenerate",
+    "copy": "Copy",
+    "copied": "Copied",
+    "you": "You",
+    "assistant": "Assistant",
+    "toolCall": "Tool call",
+    "toolResult": "Tool result",
+    "clearHistory": "Clear chat history"
+  },
   "settings": {
     "title": "Configuration",
     "aiInfo": "AI Information",
     "maxTokenLimit": "Maximum Token Limit",
-    "configHint": "OpenAI model and API URL can be configured through environment variables. See the .env.example file in the project.",
     "templateTab": "Templates",
     "modelTab": "Model Parameters",
     "applySettings": "Apply Settings",
@@ -26,40 +127,30 @@
     "testError": "Test Error",
     "modelParams": {
       "title": "Model Parameters",
-      "maxTokens": "Maximum Tokens (max_tokens)",
-      "maxTokensDesc": "Controls the maximum number of tokens to generate. Larger values allow for longer responses but may require more processing time.",
-      "temperature": "Creativity Level (temperature)",
-      "temperatureDesc": "Controls the randomness of the output. Lower values produce more deterministic content, higher values produce more creative content.",
-      "defaultValues": "Default values: max_tokens = 64000, temperature = 0. These settings can also be configured as defaults in environment variables.",
+      "maxTokens": "Maximum Tokens",
+      "maxTokensDesc": "Max tokens to generate.",
+      "temperature": "Temperature",
+      "temperatureDesc": "Randomness of the output.",
       "precise": "Precise (0)",
       "balanced": "Balanced (1)",
       "creative": "Creative (2)",
-      "apiKeyPlaceholder": "Enter your OpenAI API Key",
-      "apiKeyDesc": "Custom API key will override server's default. Leave empty to use server's API key.",
-      "baseUrlDesc": "Custom Base URL endpoint. Default is https://api.openai.com/v1",
-      "modelDesc": "Model to use for AI generation. Default is gpt-4o."
+      "apiKeyPlaceholder": "API Key",
+      "apiKeyDesc": "Per-request API key (overrides server env).",
+      "baseUrlDesc": "Base URL endpoint.",
+      "modelDesc": "Model to use."
     },
     "templates": {
       "framework": "Select Framework",
       "ui": "Select UI Components",
       "tools": "Select Tools",
       "toolsMultiSelect": "Tools are optional and multiple can be selected",
-      "uiOptional": "UI component library is optional, you can use default settings",
-      "requireVue3": "Please select Vue 3 framework first to use component libraries",
-      "requireFramework": "Please select a framework first to choose tools",
+      "uiOptional": "UI component library is optional",
+      "requireVue3": "Please select Vue 3 framework first",
+      "requireFramework": "Please select a framework first",
       "categories": {
         "framework": "Framework",
         "ui": "UI Components",
         "tools": "Tools"
-      },
-      "toolDescriptions": {
-        "tailwindcss": "Utility-first CSS framework",
-        "vueuse": "Collection of Vue Composition API utilities",
-        "dayjs": "Lightweight date library"
-      },
-      "frameworkDescriptions": {
-        "vanilla": "More attractive and easier to maintain than vanilla HTML, built with TailwindCSS.",
-        "vue3": "Vue 3 framework, requires higher model capability, may result in code that cannot be executed."
       }
     }
   },
@@ -69,70 +160,6 @@
   },
   "editor": {
     "resetConfirm": "You are about to reset the editor. Are you sure?"
-  },
-  "deploy": {
-    "deploy": "Deploy",
-    "login": "Login",
-    "deploying": "Deploying",
-    "success": "Deployed Successfully!",
-    "error": "Deployment Failed",
-    "fixErrors": "Please fix errors before deploying"
-  },
-  "askAI": {
-    "title": "AI Chat",
-    "placeholder": "Ask AI to update your HTML...",
-    "working": "Please wait while AI is working.",
-    "clear": "Clear",
-    "optimizePromptTooltip": "Optimize your prompt",
-    "optimizePrompt": "Optimize Prompt",
-    "promptOptimized": "Prompt optimized successfully!",
-    "generate": "Generate",
-    "stopGeneration": "Stop Generation",
-    "generationStopped": "Generation stopped",
-    "showPreview": "Show Preview",
-    "history": "History",
-    "conversationHistory": "Conversation History",
-    "clearHistory": "Clear History",
-    "clearHistoryTitle": "Clear All History",
-    "confirmClearHistory": "Are you sure you want to clear all conversation history?",
-    "historyClearedSuccess": "History cleared successfully",
-    "noHistory": "No conversation history",
-    "you": "You",
-    "ai": "AI",
-    "viewDetail": "View Detail",
-    "yourPrompt": "Your Prompt",
-    "aiResponse": "AI Response",
-    "previewThis": "Preview This Page",
-    "messageTime": "Message Time",
-    "copyMessage": "Copy Message",
-    "messageCopied": "Message copied",
-    "loadPrompt": "Use This Prompt",
-    "promptLoaded": "Prompt loaded",
-    "emptyHistoryTip": "Start a conversation to create your first record",
-    "deleteMessage": "Delete message",
-    "deleteMessageTitle": "Delete Message",
-    "confirmDeleteMessage": "Are you sure you want to delete this message?",
-    "confirmDelete": "Confirm delete?",
-    "messageDeleted": "Message deleted",
-    "editMessage": "Edit message",
-    "copyToPrompt": "Copy to input",
-    "newConversation": "New Conversation",
-    "keepCurrentDesign": "Do you want to keep the current design?",
-    "startingNewConversation": "Starting new conversation with current design",
-    "startingFreshConversation": "Starting fresh conversation with default template",
-    "generatedCode": "Generated code"
-  },
-  "toast": {
-    "contentRestored": "Previous HTML content restored from local storage.",
-    "remixLoaded": "Remix content loaded successfully.",
-    "remixFailed": "Failed to load remix content.",
-    "templateLoaded": "Template {{name}} loaded successfully",
-    "templateLoadFailed": "Failed to load template",
-    "templateLoadError": "Error loading template"
-  },
-  "language": {
-    "en": "English",
-    "zh": "中文"
   },
   "preview": {
     "backToEditor": "Back to editor",
@@ -147,20 +174,10 @@
     "copyFailed": "Failed to copy HTML.",
     "downloadSuccess": "HTML downloaded successfully!",
     "downloadFailed": "Failed to download HTML.",
-    "saveToDB": "Save template",
-    "saveToDBTooltip": "Save as template",
-    "templatesList": "Templates list",
-    "templatesListTooltip": "View saved templates",
-    "templateLoaded": "Template loaded successfully!",
     "autoRefresh": "Auto Refresh",
     "autoRefreshOn": "Auto refresh enabled",
     "autoRefreshOff": "Auto refresh disabled",
-    "disableAutoRefresh": "Disable auto refresh",
-    "enableAutoRefresh": "Enable auto refresh",
-    "manualRefreshTooltip": "Click to manually refresh preview",
-    "moreActions": "More Actions",
-    "autoRefreshEnabled": "Auto refresh enabled",
-    "autoRefreshDisabled": "Auto refresh disabled"
+    "manualRefreshTooltip": "Click to manually refresh preview"
   },
   "common": {
     "cancel": "Cancel",
@@ -172,42 +189,17 @@
     "copy": "Copy",
     "copied": "Copied"
   },
-  "saveTemplate": {
-    "title": "Save HTML Template",
-    "templateName": "Template Name",
-    "templateNamePlaceholder": "Enter template name",
-    "titleRequired": "Please enter a template name",
-    "saveSuccess": "Template saved successfully!",
-    "saveFailed": "Failed to save template"
-  },
-  "templatesList": {
-    "title": "Saved Templates",
-    "noTemplates": "No saved templates",
-    "use": "Use",
-    "delete": "Delete",
-    "copy": "Copy",
-    "download": "Download",
-    "loadError": "Failed to load templates list",
-    "deleteSuccess": "Template deleted successfully",
-    "deleteError": "Failed to delete template",
-    "copySuccess": "Template copied to clipboard successfully",
-    "copyError": "Failed to copy template",
-    "downloadSuccess": "Template downloaded successfully",
-    "downloadError": "Failed to download template"
-  },
-  "indexedDB": {
-    "notInitialized": "Database not initialized, please try again later"
-  },
   "errors": {
-    "optimizePromptFailed": "Failed to optimize prompt",
-    "optimizationFailed": "Failed to optimize prompt",
     "rateLimitExceeded": "Too many requests. Please try again later.",
     "rateLimitExceededWithTime": "Too many requests. Please try again in {{minutes}} minutes.",
     "aiRequestFailed": "An error occurred while requesting AI",
-    "processingResponseFailed": "Failed to process response from server",
-    "aiResponseError": "Error processing AI response"
+    "processingResponseFailed": "Failed to process response from server"
   },
   "success": {
     "aiResponseSuccess": "AI responded successfully"
+  },
+  "language": {
+    "en": "English",
+    "zh": "中文"
   }
-} 
+}
