@@ -27,6 +27,7 @@ export default function ExplorerPanel({
   const templates = [
     { id: "vanilla", name: "TailwindCSS HTML" },
     { id: "vue3", name: "Vue 3" },
+    { id: "gradio-server", name: "Gradio Server (Python)" },
   ];
 
   return (

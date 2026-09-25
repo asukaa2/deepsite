@@ -14,6 +14,7 @@
     "mcp": "MCP 服务器",
     "skills": "技能",
     "cloner": "网站克隆",
+    "gradio": "Gradio 服务器",
     "settings": "设置",
     "search": "搜索",
     "welcome": "欢迎",
@@ -91,6 +92,24 @@
     "links": "链接",
     "fetchFailed": "获取失败",
     "fetchOk": "骨架获取成功"
+  },
+  "gradio": {
+    "launchOptions": "启动选项",
+    "shareUrl": "公开分享 URL",
+    "mcpServer": "暴露为 MCP 服务器",
+    "serverName": "服务器地址",
+    "serverPort": "端口",
+    "launch": "启动 Gradio 服务器",
+    "running": "运行中的服务器",
+    "noneRunning": "没有运行中的 Gradio 服务器",
+    "stop": "停止",
+    "remove": "删除",
+    "logs": "日志",
+    "noLogs": "等待日志…",
+    "waitingForUrl": "等待 Gradio 输出 URL…",
+    "pythonMissing": "需要 Python + Gradio 6+。安装：pip install 'gradio>=6'",
+    "sendToGradio": "发送到 Gradio 面板",
+    "launchAsGradio": "作为 Gradio 服务器启动"
   },
   "chat": {
     "placeholder": "描述你要构建的页面，Shift+Enter 换行。",

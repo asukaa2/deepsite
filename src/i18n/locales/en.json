@@ -14,6 +14,7 @@
     "mcp": "MCP Servers",
     "skills": "Skills",
     "cloner": "Website Cloner",
+    "gradio": "Gradio Server",
     "settings": "Settings",
     "search": "Search",
     "welcome": "WELCOME",
@@ -91,6 +92,24 @@
     "links": "Links",
     "fetchFailed": "Failed to fetch URL",
     "fetchOk": "Fetched skeleton successfully"
+  },
+  "gradio": {
+    "launchOptions": "Launch Options",
+    "shareUrl": "Public share URL",
+    "mcpServer": "Expose as MCP server",
+    "serverName": "Server host",
+    "serverPort": "Port",
+    "launch": "Launch Gradio Server",
+    "running": "Running servers",
+    "noneRunning": "No Gradio servers running",
+    "stop": "Stop",
+    "remove": "Remove",
+    "logs": "Logs",
+    "noLogs": "Waiting for logs…",
+    "waitingForUrl": "Waiting for Gradio to print the URL…",
+    "pythonMissing": "Python + Gradio 6+ required. Install with: pip install 'gradio>=6'",
+    "sendToGradio": "Send to Gradio panel",
+    "launchAsGradio": "Launch as Gradio server"
   },
   "chat": {
     "placeholder": "Describe the page you want to build. Shift+Enter for newline.",

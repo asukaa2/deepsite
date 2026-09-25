@@ -12,6 +12,7 @@ import EditorPreview from "./editor/editor-preview";
 import { defaultHTML } from "../../utils/consts";
 import { useProvidersStore } from "../store/providersStore";
 import { useChatStore } from "../store/chatStore";
+import { useGradioStore } from "../store/gradioStore";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -29,6 +30,12 @@ function App() {
 
   const { providers, current, configs } = useProvidersStore();
   const { isWorking } = useChatStore();
+  const setGradioCode = useGradioStore((s) => s.setCode);
+
+  // Track whether the user is currently in "Gradio mode" (template = gradio-server).
+  // When true, AI responses are Python code, not HTML; we feed them to the
+  // Gradio panel instead of the editor/preview.
+  const isGradioMode = selectedTemplateId === "gradio-server";
 
   // Restore persisted settings
   useEffect(() => {
@@ -131,6 +138,18 @@ function App() {
 
   const loadTemplate = async (id: string) => {
     try {
+      // Gradio template is Python code, not HTML — load it into the Gradio store
+      if (id === "gradio-server") {
+        const res = await fetch("/api/gradio/template");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok && data.template?.code) {
+            setGradioCode(data.template.code);
+            toast.success(t("toast.templateLoaded", { name: data.template.name }));
+          }
+        }
+        return;
+      }
       const res = await fetch(`/api/templates/${id}`);
       if (res.ok) {
         const data = await res.json();
@@ -195,6 +214,8 @@ function App() {
             onStreamingUpdate={(h) => setHtml(h)}
             pendingClone={pendingClone}
             clearPendingClone={() => setPendingClone(null)}
+            gradioMode={isGradioMode}
+            setGradioCode={setGradioCode}
           />
         </div>
       </div>
