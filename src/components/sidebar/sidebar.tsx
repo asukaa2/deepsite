@@ -6,12 +6,10 @@ import ProvidersPanel from "./panels/providers-panel";
 import McpPanel from "./panels/mcp-panel";
 import SkillsPanel from "./panels/skills-panel";
 import ClonerPanel from "./panels/cloner-panel";
-import GradioPanel from "./panels/gradio-panel";
 import SettingsPanel from "./panels/settings-panel";
 import { useProvidersStore } from "../../store/providersStore";
 import { useMcpStore } from "../../store/mcpStore";
 import { useSkillsStore } from "../../store/skillsStore";
-import { useGradioStore } from "../../store/gradioStore";
 
 interface SidebarProps {
   // Pass-through callbacks for Explorer
@@ -34,14 +32,12 @@ export default function Sidebar(props: SidebarProps) {
   const loadProviders = useProvidersStore((s) => s.load);
   const loadMcp = useMcpStore((s) => s.load);
   const loadSkills = useSkillsStore((s) => s.load);
-  const loadGradio = useGradioStore((s) => s.load);
 
   useEffect(() => {
     loadProviders();
     loadMcp();
     loadSkills();
-    loadGradio();
-  }, [loadProviders, loadMcp, loadSkills, loadGradio]);
+  }, [loadProviders, loadMcp, loadSkills]);
 
   const titleKey =
     view === "explorer" ? "sidebar.explorer" :
@@ -49,7 +45,6 @@ export default function Sidebar(props: SidebarProps) {
     view === "mcp" ? "sidebar.mcp" :
     view === "skills" ? "sidebar.skills" :
     view === "cloner" ? "sidebar.cloner" :
-    view === "gradio" ? "sidebar.gradio" :
     "sidebar.settings";
 
   return (
@@ -77,7 +72,6 @@ export default function Sidebar(props: SidebarProps) {
           {view === "cloner" && (
             <ClonerPanel onClone={props.onClone} />
           )}
-          {view === "gradio" && <GradioPanel />}
           {view === "settings" && (
             <SettingsPanel
               modelParams={props.modelParams}

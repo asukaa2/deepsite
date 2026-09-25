@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { TbFile, TbServer, TbPlugConnected, TbBolt, TbCopy, TbSettings, TbBrandGithub, TbBrandPython } from "react-icons/tb";
+import { TbFile, TbServer, TbPlugConnected, TbBolt, TbCopy, TbSettings, TbBrandGithub } from "react-icons/tb";
 
 export type SidebarView =
   | "explorer"
@@ -7,7 +7,6 @@ export type SidebarView =
   | "mcp"
   | "skills"
   | "cloner"
-  | "gradio"
   | "settings";
 
 interface ActivityBarProps {
@@ -23,7 +22,6 @@ export default function ActivityBar({ view, setView }: ActivityBarProps) {
     { id: "mcp", icon: <TbPlugConnected size={22} />, label: t("sidebar.mcp") },
     { id: "skills", icon: <TbBolt size={22} />, label: t("sidebar.skills") },
     { id: "cloner", icon: <TbCopy size={22} />, label: t("sidebar.cloner") },
-    { id: "gradio", icon: <TbBrandPython size={22} />, label: t("sidebar.gradio") },
     { id: "settings", icon: <TbSettings size={22} />, label: t("sidebar.settings") },
   ];
 

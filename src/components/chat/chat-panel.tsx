@@ -28,8 +28,6 @@ interface ChatPanelProps {
   onStreamingUpdate: (html: string) => void; // live updates during stream
   pendingClone: { url: string } | null;
   clearPendingClone: () => void;
-  gradioMode?: boolean;
-  setGradioCode?: (code: string) => void;
 }
 
 function genId() {
@@ -161,41 +159,27 @@ export default function ChatPanel(props: ChatPanelProps) {
         }
         contentResponse += chunk;
         appendToMessage(assistantId, chunk);
-        // Live-update: in gradio mode, stream Python code; otherwise, look for HTML
-        if (props.gradioMode) {
-          props.setGradioCode?.(contentResponse);
-        } else {
-          const finalDoc = contentResponse.match(/<!DOCTYPE html>[\s\S]*<\/html>/)?.[0];
-          if (finalDoc) {
-            props.onStreamingUpdate(finalDoc);
-          }
-        }
-      }
-      // Try to extract the final HTML / Python code
-      if (props.gradioMode) {
-        // In gradio mode, the entire response is Python code
-        props.setGradioCode?.(contentResponse);
-        useChatStore.setState((state: any) => ({
-          messages: state.messages.map((m: any) =>
-            m.id === assistantId ? { ...m, html: contentResponse, isGradio: true } : m
-          ),
-        }));
-      } else {
+        // Live-update preview
         const finalDoc = contentResponse.match(/<!DOCTYPE html>[\s\S]*<\/html>/)?.[0];
         if (finalDoc) {
-          props.setHtml(finalDoc);
-          // Update the assistant message to embed the HTML
-          useChatStore.setState((state: any) => ({
-            messages: state.messages.map((m: any) =>
-              m.id === assistantId ? { ...m, html: finalDoc } : m
-            ),
-          }));
-        } else if (contentResponse.includes("<html") && contentResponse.includes("<body")) {
-          let fixed = contentResponse;
-          if (!fixed.includes("</body>")) fixed += "\n</body>";
-          if (!fixed.includes("</html>")) fixed += "\n</html>";
-          props.setHtml(fixed);
+          props.onStreamingUpdate(finalDoc);
         }
+      }
+      // Try to extract the final HTML
+      const finalDoc = contentResponse.match(/<!DOCTYPE html>[\s\S]*<\/html>/)?.[0];
+      if (finalDoc) {
+        props.setHtml(finalDoc);
+        // Update the assistant message to embed the HTML
+        useChatStore.setState((state: any) => ({
+          messages: state.messages.map((m: any) =>
+            m.id === assistantId ? { ...m, html: finalDoc } : m
+          ),
+        }));
+      } else if (contentResponse.includes("<html") && contentResponse.includes("<body")) {
+        let fixed = contentResponse;
+        if (!fixed.includes("</body>")) fixed += "\n</body>";
+        if (!fixed.includes("</html>")) fixed += "\n</html>";
+        props.setHtml(fixed);
       }
       props.setPreviousPrompt(prompt);
     } catch (e: any) {
