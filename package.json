@@ -40,6 +40,7 @@
     "utils/",
     "middlewares/",
     "server.js",
+    "index.html",
     "vite.config.ts",
     "tsconfig.json",
     "tsconfig.app.json",
