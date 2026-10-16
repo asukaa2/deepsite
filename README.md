@@ -65,16 +65,49 @@ server.js                   # Express: /api/providers, /api/providers/custom, /a
 
 ## Quick start
 
+### Install as a global CLI (recommended)
+
 ```bash
+npm i -g deepsite@github:asukaa2/deepsite
+# The `prepare` script builds the frontend automatically during install.
+
+deepsite                    # → http://localhost:3000  (auto-builds on first run if needed)
+deepsite --port 8080        # → http://localhost:8080
+deepsite --host 0.0.0.0     # → bind to all interfaces
+deepsite dev                # → Vite dev + Express API (live reload, port 5173 + 3000)
+deepsite build              # → rebuild the frontend only
+deepsite --help             # → CLI help
+deepsite --version          # → print version
+```
+
+Set your API key before launching (any of these works):
+
+```bash
+OPENAI_API_KEY=sk-... deepsite
+# or
+DEEPSEEK_API_KEY=... deepsite
+# or export them in your shell, or write a .env in your CWD
+```
+
+The CLI persists user data (custom providers, custom models, MCP config) to `./data/` in your current working directory — so each project you run `deepsite` from has its own config.
+
+### Run from source (development)
+
+```bash
+git clone https://github.com/asukaa2/deepsite.git
 cd deepsite
-npm install
-cp .env.example .env       # then edit .env (at least one provider)
-npm run start:dev
-# → Vite dev server on http://localhost:5173
-# → Express API on http://localhost:3000
+npm install                 # also runs `prepare` → builds dist/
+npm run start:dev           # → Vite on http://localhost:5173 + Express API on http://localhost:3000
 ```
 
 Open http://localhost:5173. Pick a provider in the sidebar, paste an API key, optionally add MCP servers / activate skills, then describe a page in the chat panel.
+
+### Production (Docker or self-host)
+
+```bash
+npm run build && npm run start
+# Express serves dist/ + the API on http://localhost:3000
+```
 
 ## Environment variables
 
@@ -90,14 +123,17 @@ See `.env.example` for the full list. Highlights:
 | `DEFAULT_TEMPERATURE` | Default `temperature` (0). |
 | `IP_RATE_LIMIT` | Per-IP hourly request limit; 0 or unset = unlimited. |
 | `APP_PORT` | Express port (default 3000). |
+| `APP_HOST` | Express bind host (default `127.0.0.1`; set to `0.0.0.0` to expose on LAN). |
 
 ## Production
 
+The CLI is production-ready:
+
 ```bash
-npm run build && npm run start
+deepsite --host 0.0.0.0 --port 80
 ```
 
-The Express server serves the built `dist/` and the API on `http://localhost:3000`.
+The Express server serves the built `dist/` and the API from the same port. Use a process manager (`pm2`, `systemd`, Docker) to keep it alive.
 
 ## Vercel deployment
 

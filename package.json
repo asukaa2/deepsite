@@ -1,8 +1,55 @@
 {
-  "name": "html-space-editor",
-  "private": true,
-  "version": "0.0.0",
+  "name": "deepsite",
+  "version": "1.0.0",
+  "description": "AI-powered web app generator with multi-provider LLM support, MCP integration, claude-code-style skills, mobile/Android templates, and full-stack multi-file project mode. Vite + React + Express — no Next.js, no SDK lock-in.",
   "type": "module",
+  "license": "MIT",
+  "author": "asukaa2",
+  "homepage": "https://github.com/asukaa2/deepsite",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asukaa2/deepsite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/asukaa2/deepsite/issues"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "code-generator",
+    "html-generator",
+    "openai",
+    "claude",
+    "gemini",
+    "deepseek",
+    "mcp",
+    "vite",
+    "react",
+    "express",
+    "tailwindcss",
+    "material-design",
+    "react-native-web"
+  ],
+  "bin": {
+    "deepsite": "bin/deepsite.js"
+  },
+  "files": [
+    "bin/",
+    "public/",
+    "src/",
+    "utils/",
+    "middlewares/",
+    "server.js",
+    "vite.config.ts",
+    "tsconfig.json",
+    "tsconfig.app.json",
+    "tsconfig.node.json",
+    "eslint.config.js",
+    "module.d.ts",
+    ".env.example",
+    "README.md",
+    "README.en.md"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -10,7 +57,11 @@
     "preview": "vite preview",
     "start": "node server.js",
     "start:dev": "concurrently \"npm run dev\" \"npm run start\"",
-    "vercel-build": "npm run build"
+    "vercel-build": "npm run build",
+    "prepare": "npm run build"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@huggingface/hub": "^1.1.1",

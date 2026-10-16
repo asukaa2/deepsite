@@ -802,8 +802,19 @@ app.get("*", (_req, res) => {
 });
 
 if (!isVercelEnvironment) {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  const HOST = process.env.APP_HOST || "127.0.0.1";
+  app.listen(PORT, HOST, () => {
+    const displayHost = HOST === "0.0.0.0" || HOST === "::" ? "localhost" : HOST;
+    console.log("");
+    console.log("  DeepSite is running!");
+    console.log("");
+    console.log(`  ➜  Local:   http://${displayHost}:${PORT}`);
+    if (HOST === "0.0.0.0" || HOST === "::") {
+      console.log(`  ➜  Network: http://<your-ip>:${PORT}`);
+    }
+    console.log("");
+    console.log("  Press Ctrl+C to stop.");
+    console.log("");
   });
 }
 
