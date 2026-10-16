@@ -52,14 +52,14 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node ./node_modules/typescript/bin/tsc -b && node ./node_modules/vite/bin/vite.js build",
     "build:bundle": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "node server.js",
     "start:dev": "concurrently \"npm run dev\" \"npm run start\"",
     "vercel-build": "npm run build",
-    "prepare": "npm run build"
+    "prepare": "node ./node_modules/typescript/bin/tsc -b && node ./node_modules/vite/bin/vite.js build"
   },
   "engines": {
     "node": ">=18.0.0"
