@@ -26,6 +26,9 @@ function App() {
   const [modelParams, setModelParams] = useState<any>();
   const [pendingClone, setPendingClone] = useState<{ url: string } | null>(null);
   const [streaming, setStreaming] = useState(false);
+  // Multi-file project mode (fullstack)
+  const [projectFiles, setProjectFiles] = useState<Record<string, string> | null>(null);
+  const [activeFile, setActiveFile] = useState<string>("index.html");
 
   const { providers, current, configs } = useProvidersStore();
   const { isWorking } = useChatStore();
@@ -101,6 +104,7 @@ function App() {
     if (html !== defaultHTML && !window.confirm(t("editor.resetConfirm"))) return;
     setHtml(defaultHTML);
     setPreviousPrompt("");
+    setProjectFiles(null);
     toast.success(t("toast.resetSuccess"));
   };
 
@@ -118,6 +122,11 @@ function App() {
     if (tools.length > 0) localStorage.setItem("selected_tools", JSON.stringify(tools));
     else localStorage.removeItem("selected_tools");
     localStorage.setItem("last_template_id", framework);
+
+    // Reset project mode if leaving a fullstack template
+    if (!["nextjs-fullstack", "express-react", "mern-stack"].includes(framework)) {
+      setProjectFiles(null);
+    }
 
     // Try to fetch the template HTML
     if (html !== defaultHTML) {
@@ -155,8 +164,28 @@ function App() {
 
   const currentLang = i18n.language?.startsWith("zh") ? "zh" : "en";
 
+  // When AI streams a project (multi-file) output, switch to project mode
+  const handleStreamingUpdate = (h: string) => {
+    setHtml(h);
+    // Detect multi-file markers <!--file:path--> ... <!--/file-->
+    const fileMap: Record<string, string> = {};
+    const re = /<!--file:([^\s]+)-->\n?([\s\S]*?)<!--\/file-->/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(h)) !== null) {
+      // Strip an optional single pair of ```lang ... ``` fences around the content
+      let content = m[2].trimEnd();
+      const fenceMatch = content.match(/^```[a-zA-Z]*\n([\s\S]*?)\n```$/);
+      if (fenceMatch) content = fenceMatch[1];
+      fileMap[m[1]] = content;
+    }
+    if (Object.keys(fileMap).length > 0) {
+      setProjectFiles(fileMap);
+      if (!fileMap[activeFile]) setActiveFile(Object.keys(fileMap)[0]);
+    }
+  };
+
   return (
-    <div className="h-screen bg-[#1e1e1e] flex flex-col overflow-hidden text-[#e0e0e0]">
+    <div className="h-screen flex flex-col overflow-hidden" style={{ background: "var(--bg)", color: "var(--text)" }}>
       <TopBar
         onReset={handleReset}
         providerName={provider?.name}
@@ -175,14 +204,21 @@ function App() {
           modelParams={modelParams}
           onModelParamsChange={handleModelParamsChange}
           onClone={(data) => setPendingClone(data)}
+          projectFiles={projectFiles}
+          activeFile={activeFile}
+          setActiveFile={setActiveFile}
         />
         <EditorPreview
           html={html}
           setHtml={setHtml}
           isWorking={isWorking}
           isStreaming={streaming}
+          projectFiles={projectFiles}
+          activeFile={activeFile}
+          setActiveFile={setActiveFile}
+          setProjectFiles={setProjectFiles}
         />
-        <div className="w-[420px] flex-none">
+        <div className="w-[440px] flex-none">
           <ChatPanel
             html={html}
             setHtml={setHtml}
@@ -192,7 +228,7 @@ function App() {
             language={currentLang}
             maxTokens={modelParams?.max_tokens ?? 64000}
             temperature={modelParams?.temperature ?? 0}
-            onStreamingUpdate={(h) => setHtml(h)}
+            onStreamingUpdate={handleStreamingUpdate}
             pendingClone={pendingClone}
             clearPendingClone={() => setPendingClone(null)}
           />

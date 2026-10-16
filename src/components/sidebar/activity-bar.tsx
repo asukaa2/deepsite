@@ -1,5 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { TbFile, TbServer, TbPlugConnected, TbBolt, TbCopy, TbSettings, TbBrandGithub } from "react-icons/tb";
+import {
+  TbFile,
+  TbServer,
+  TbPlugConnected,
+  TbBolt,
+  TbCopy,
+  TbSettings,
+  TbBrandGithub,
+} from "react-icons/tb";
 
 export type SidebarView =
   | "explorer"
@@ -17,16 +25,16 @@ interface ActivityBarProps {
 export default function ActivityBar({ view, setView }: ActivityBarProps) {
   const { t } = useTranslation();
   const items: { id: SidebarView; icon: React.ReactNode; label: string }[] = [
-    { id: "explorer", icon: <TbFile size={22} />, label: t("sidebar.explorer") },
-    { id: "providers", icon: <TbServer size={22} />, label: t("sidebar.providers") },
-    { id: "mcp", icon: <TbPlugConnected size={22} />, label: t("sidebar.mcp") },
-    { id: "skills", icon: <TbBolt size={22} />, label: t("sidebar.skills") },
-    { id: "cloner", icon: <TbCopy size={22} />, label: t("sidebar.cloner") },
-    { id: "settings", icon: <TbSettings size={22} />, label: t("sidebar.settings") },
+    { id: "explorer", icon: <TbFile size={20} />, label: t("sidebar.explorer") },
+    { id: "providers", icon: <TbServer size={20} />, label: t("sidebar.providers") },
+    { id: "mcp", icon: <TbPlugConnected size={20} />, label: t("sidebar.mcp") },
+    { id: "skills", icon: <TbBolt size={20} />, label: t("sidebar.skills") },
+    { id: "cloner", icon: <TbCopy size={20} />, label: t("sidebar.cloner") },
+    { id: "settings", icon: <TbSettings size={20} />, label: t("sidebar.settings") },
   ];
 
   return (
-    <div className="w-12 bg-[#333333] flex flex-col items-center justify-between flex-none border-r border-[#252526]">
+    <div className="activity-bar">
       <div className="flex flex-col">
         {items.map((item) => (
           <button
@@ -40,13 +48,13 @@ export default function ActivityBar({ view, setView }: ActivityBarProps) {
         ))}
       </div>
       <a
-        href="https://github.com/kiritoko1029/deepsite"
+        href="https://github.com/asukaa2/deepsite"
         target="_blank"
         rel="noopener noreferrer"
         className="activity-icon"
         title="GitHub"
       >
-        <TbBrandGithub size={22} />
+        <TbBrandGithub size={20} />
       </a>
     </div>
   );

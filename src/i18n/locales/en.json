@@ -119,7 +119,7 @@
     "fetchOk": "Fetched skeleton successfully"
   },
   "chat": {
-    "placeholder": "Describe the page you want to build. Shift+Enter for newline.",
+    "placeholder": "Describe the page you want to build. Shift+Enter for newline. Type / for skills.",
     "send": "Send",
     "stop": "Stop",
     "newChat": "New chat",

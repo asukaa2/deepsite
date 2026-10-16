@@ -119,7 +119,7 @@
     "fetchOk": "骨架获取成功"
   },
   "chat": {
-    "placeholder": "描述你要构建的页面，Shift+Enter 换行。",
+    "placeholder": "描述你要构建的页面，Shift+Enter 换行。输入 / 浏览技能。",
     "send": "发送",
     "stop": "停止",
     "newChat": "新对话",

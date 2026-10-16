@@ -12,7 +12,6 @@ import { useMcpStore } from "../../store/mcpStore";
 import { useSkillsStore } from "../../store/skillsStore";
 
 interface SidebarProps {
-  // Pass-through callbacks for Explorer
   html: string;
   onReset: () => void;
   onTemplateChange: (framework: string, ui: string | null, tools: string[]) => void;
@@ -22,13 +21,15 @@ interface SidebarProps {
   modelParams: any;
   onModelParamsChange: (params: any) => void;
   onClone: (cloneData: any) => void;
+  projectFiles: Record<string, string> | null;
+  activeFile: string;
+  setActiveFile: (f: string) => void;
 }
 
 export default function Sidebar(props: SidebarProps) {
   const { t } = useTranslation();
   const [view, setView] = useState<SidebarView>("explorer");
 
-  // Pre-load all sidebar-relevant stores
   const loadProviders = useProvidersStore((s) => s.load);
   const loadMcp = useMcpStore((s) => s.load);
   const loadSkills = useSkillsStore((s) => s.load);
@@ -48,9 +49,9 @@ export default function Sidebar(props: SidebarProps) {
     "sidebar.settings";
 
   return (
-    <div className="flex h-full bg-[#252526]">
+    <div className="flex h-full sidebar-panel">
       <ActivityBar view={view} setView={setView} />
-      <div className="w-64 flex flex-col border-r border-[#1e1e1e] overflow-hidden">
+      <div className="w-64 flex flex-col overflow-hidden">
         <div className="panel-header">
           <span>{t(titleKey)}</span>
         </div>
@@ -64,14 +65,15 @@ export default function Sidebar(props: SidebarProps) {
               selectedTemplateId={props.selectedTemplateId}
               selectedUI={props.selectedUI}
               selectedTools={props.selectedTools}
+              projectFiles={props.projectFiles}
+              activeFile={props.activeFile}
+              setActiveFile={props.setActiveFile}
             />
           )}
           {view === "providers" && <ProvidersPanel />}
           {view === "mcp" && <McpPanel />}
           {view === "skills" && <SkillsPanel />}
-          {view === "cloner" && (
-            <ClonerPanel onClone={props.onClone} />
-          )}
+          {view === "cloner" && <ClonerPanel onClone={props.onClone} />}
           {view === "settings" && (
             <SettingsPanel
               modelParams={props.modelParams}

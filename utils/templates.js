@@ -1,447 +1,396 @@
-// 统一管理CDN地址
+// Template registry — single-file (HTML) + multi-file (full-stack) project templates.
+
 const CDN_URLS = {
-  // Vue相关
+  // Vue
   VUE: "https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js",
   VUE_COMPOSITION_API: "https://unpkg.com/@vue/composition-api@1.7.2/dist/vue-composition-api.prod.js",
-  
-  // 组件库
+  // Vue component libraries
   ELEMENT_PLUS_CSS: "https://unpkg.com/element-plus@2.9.7/dist/index.css",
   ELEMENT_PLUS_JS: "https://unpkg.com/element-plus@2.9.7/dist/index.full.js",
   ELEMENT_PLUS_ICONS: "https://cdn.jsdelivr.net/npm/@element-plus/icons-vue",
   NAIVE_UI: "https://unpkg.com/naive-ui@2.41.0/dist/index.prod.js",
-  
-  // 工具库
+  // Tailwind
   TAILWIND: "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4",
+  // React Native Web (Android/iOS-style UI rendered in the browser)
+  REACT_NATIVE_WEB: "https://unpkg.com/react-native-web@0.20.0/dist/react-native-web.min.js",
+  REACT: "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+  REACT_DOM: "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+  REACT_BABEL: "https://unpkg.com/@babel/standalone@7.26.4/babel.min.js",
+  // Material 3 (Android-style) — Material Web Components
+  MATERIAL_WEB: "https://cdn.jsdelivr.net/npm/@material/web@2.3.0/all.min.js",
+  MATERIAL_TYPOGRAPHY: "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Material+Symbols+Outlined",
+  // Utilities
   VUEUSE_SHARED: "https://unpkg.com/@vueuse/shared@13.0.0/index.iife.min.js",
   VUEUSE_CORE: "https://unpkg.com/@vueuse/core@13.0.0/index.iife.min.js",
-  DAYJS: "https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"
+  DAYJS: "https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js",
 };
 
 const TEMPLATES = {
-    vanilla: {
-      name: "TailwindCSS HTML",
-      description: "相较于原生HTML，使用TailwindCSS构建的HTML更加美观，更加易于维护。",
-      systemPrompt: `ONLY USE HTML, CSS AND JAVASCRIPT. If you want to use ICON make sure to import the library first. Try to create the best UI possible by using only HTML, CSS and JAVASCRIPT. Please write clear and helpful comments in your code to explain the structure and functionality. Use as much as you can TailwindCSS for the CSS, if you can't do something with TailwindCSS, then use custom CSS (make sure to import <script src="${CDN_URLS.TAILWIND}"></script> in the head). Also, try to ellaborate as much as you can, to create something unique. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE`,
-      html: `<!DOCTYPE html>
-  <html>
-    <head>
-      <title>TailwindCSS HTML</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta charset="utf-8">
-      <script src="${CDN_URLS.TAILWIND}"></script>
-      <style>
-        body {
-          font-family: system-ui, -apple-system, sans-serif;
-        }
-      </style>
-    </head>
-    <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <main class="max-w-md mx-auto mt-12 bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="p-8">
-          <div class="flex justify-between items-center mb-4">
-            <div class="text-indigo-500 font-medium">原生HTML + Tailwind CSS</div>
-            <div class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800">演示</div>
-          </div>
-          <h1 class="text-2xl font-bold text-gray-800 mb-2">简洁HTML起始模板</h1>
-          <p class="text-gray-600 mb-4">这是一个使用原生HTML和TailwindCSS构建的简单页面，可以作为您项目的起点。</p>
-          <div class="mt-6 flex space-x-2">
-            <button class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md">
-              开始使用
-            </button>
-            <button class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md">
-              查看文档
-            </button>
-          </div>
-        </div>
-      </main>
-      <footer class="text-center mt-8 text-sm text-gray-500">
-        请在下方输入提示词，AI将为您生成自定义页面
-      </footer>
-    </body>
-  </html>`
-    },
-    vue3: {
-      name: "Vue 3",
-      description: "Vue 3 框架，对模型能力要求较高，可能会出现生成代码无法执行的情况。",
-      systemPrompt: `ONLY USE VUE 3 WITH HTML, CSS AND JAVASCRIPT. Create a Vue 3 application using the CDN version (${CDN_URLS.VUE}). Structure your code with Vue 3 components, reactivity, and proper Vue syntax. Please write clear and helpful comments in your code to explain the structure and functionality. Use as much as you can TailwindCSS for the CSS, if you can't do something with TailwindCSS, then use custom CSS (make sure to import <script src="${CDN_URLS.TAILWIND}"></script> in the head). Also, try to elaborate as much as you can, to create something unique. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE`,
-      html: `<!DOCTYPE html>
-  <html>
-    <head>
-      <title>Vue 3 演示</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta charset="utf-8">
-      <script src="${CDN_URLS.VUE}"></script>
-      <script src="${CDN_URLS.TAILWIND}"></script>
-      <style>
-        [v-cloak] { display: none; }
-      </style>
-    </head>
-    <body class="bg-gray-50">
-      <div id="app" v-cloak class="min-h-screen p-4">
-        <!-- Vue 3 应用容器 -->
-        <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden mt-10">
-          <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-              <div class="text-emerald-600 font-medium">Vue 3 框架</div>
-              <span class="text-xs px-2 py-1 rounded-full" :class="counterStyle">{{ status }}</span>
-            </div>
-            
-            <h1 class="text-2xl font-bold text-gray-800 mb-2">Vue 3 响应式演示</h1>
-            <p class="text-gray-600 mb-4">这个简单页面展示了Vue 3的响应式功能。</p>
-            
-            <div class="mt-4 bg-gray-50 p-4 rounded-lg">
-              <div class="mb-2 font-medium">计数器: {{ counter }}</div>
-              <div class="flex space-x-2">
-                <button @click="increment" class="bg-emerald-500 hover:bg-emerald-600 text-white py-1 px-3 rounded">
-                  增加
-                </button>
-                <button @click="decrement" class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded">
-                  减少
-                </button>
-                <button @click="reset" class="border border-gray-300 text-gray-700 py-1 px-3 rounded">
-                  重置
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <footer class="text-center mt-8 text-sm text-gray-500">
-          请在下方输入提示词，AI将为您生成自定义Vue 3应用
-        </footer>
-      </div>
-  
-      <script>
-        const { createApp, ref, computed } = Vue;
-        
-        createApp({
-          setup() {
-            // 响应式状态
-            const counter = ref(0);
-            
-            // 计算属性
-            const status = computed(() => {
-              if (counter.value > 5) return '高';
-              if (counter.value > 0) return '中';
-              return '低';
-            });
-            
-            const counterStyle = computed(() => {
-              if (counter.value > 5) return 'bg-red-100 text-red-800';
-              if (counter.value > 0) return 'bg-yellow-100 text-yellow-800';
-              return 'bg-gray-100 text-gray-800';
-            });
-            
-            // 方法
-            const increment = () => counter.value++;
-            const decrement = () => counter.value = Math.max(0, counter.value - 1);
-            const reset = () => counter.value = 0;
-            
-            return {
-              counter,
-              status,
-              counterStyle,
-              increment,
-              decrement,
-              reset
-            };
-          }
-        }).mount('#app');
-      </script>
-    </body>
-  </html>`
-    },
-    elementPlus: {
-      name: "Vue 3 + Element Plus",
-      description: "Vue 3 框架配合 Element Plus 组件库",
-      systemPrompt: `CREATE A VUE 3 APPLICATION WITH ELEMENT PLUS UI LIBRARY. Use Vue 3 CDN (${CDN_URLS.VUE}), Element Plus CDN (CSS: ${CDN_URLS.ELEMENT_PLUS_CSS}, JS: ${CDN_URLS.ELEMENT_PLUS_JS}), and Element Plus Icons (${CDN_URLS.ELEMENT_PLUS_ICONS}). 
-
-When using Element Plus Icons, make sure to:
-1. Import them from the global ElementPlusIconsVue object: const { Icon1, Icon2 } = ElementPlusIconsVue;
-2. Register them in the components option: components: { Icon1, Icon2 }
-3. Use them in templates: <el-icon><Icon1 /></el-icon>
-
-Structure your code with Vue 3 components, reactivity, Element Plus components, and proper Vue syntax. Please write clear and helpful comments in your code to explain the structure and functionality. Follow Element Plus documentation for component usage. Try to elaborate as much as you can, to create something unique and visually appealing. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE`,
-      html: `<!DOCTYPE html>
+  // ---------- Basic ----------
+  vanilla: {
+    name: "TailwindCSS HTML",
+    description: "Single self-contained HTML file with TailwindCSS via CDN.",
+    systemPrompt: `ONLY USE HTML, CSS AND JAVASCRIPT. If you want to use ICON make sure to import the library first. Try to create the best UI possible by using only HTML, CSS and JAVASCRIPT. Please write clear and helpful comments in your code to explain the structure and functionality. Use as much as you can TailwindCSS for the CSS, if you can't do something with TailwindCSS, then use custom CSS (make sure to import <script src="${CDN_URLS.TAILWIND}"></script> in the head). Also, try to elaborate as much as you can, to create something unique. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE`,
+    html: `<!DOCTYPE html>
 <html>
   <head>
-    <title>Element Plus 演示</title>
+    <title>TailwindCSS HTML</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8">
-    <link rel="stylesheet" href="${CDN_URLS.ELEMENT_PLUS_CSS}">
+    <script src="${CDN_URLS.TAILWIND}"></script>
+    <style>body { font-family: system-ui, -apple-system, sans-serif; }</style>
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <main class="max-w-md mx-auto mt-12 bg-white rounded-xl shadow-md overflow-hidden">
+      <div class="p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Hello, DeepSite</h1>
+        <p class="text-gray-600 mb-4">Describe the page you want to build in the chat.</p>
+        <button class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md">Get started</button>
+      </div>
+    </main>
+  </body>
+</html>`,
+  },
+
+  vue3: {
+    name: "Vue 3",
+    description: "Vue 3 (CDN) with TailwindCSS. Demands strong model capability.",
+    systemPrompt: `ONLY USE VUE 3 WITH HTML, CSS AND JAVASCRIPT. Create a Vue 3 application using the CDN version (${CDN_URLS.VUE}). Structure your code with Vue 3 components, reactivity, and proper Vue syntax. Please write clear and helpful comments in your code to explain the structure and functionality. Use as much as you can TailwindCSS for the CSS, if you can't do something with TailwindCSS, then use custom CSS (make sure to import <script src="${CDN_URLS.TAILWIND}"></script> in the head). Also, try to elaborate as much as you can, to create something unique. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE`,
+    html: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vue 3 Starter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
     <script src="${CDN_URLS.VUE}"></script>
-    <script src="${CDN_URLS.ELEMENT_PLUS_JS}"></script>
-    <script src="${CDN_URLS.ELEMENT_PLUS_ICONS}"></script>
+    <script src="${CDN_URLS.TAILWIND}"></script>
+    <style>[v-cloak] { display: none; }</style>
+  </head>
+  <body class="bg-gray-50">
+    <div id="app" v-cloak class="min-h-screen p-4">
+      <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden mt-10">
+        <div class="p-6">
+          <h1 class="text-2xl font-bold text-gray-800 mb-2">Vue 3 Demo</h1>
+          <p class="text-gray-600 mb-4">Counter: {{ counter }}</p>
+          <button @click="counter++" class="bg-emerald-500 text-white py-1 px-3 rounded">Increment</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const { createApp, ref } = Vue;
+      createApp({ setup() { const counter = ref(0); return { counter }; } }).mount('#app');
+    </script>
+  </body>
+</html>`,
+  },
+
+  // ---------- Mobile (Android / iOS-style) ----------
+  "react-native-web": {
+    name: "React Native Web",
+    description: "React Native components rendered in the browser via react-native-web. Android/iOS-style UI.",
+    systemPrompt: `Create a React Native application that runs in the browser via react-native-web. Use React ${CDN_URLS.REACT}, ReactDOM ${CDN_URLS.REACT_DOM}, Babel standalone ${CDN_URLS.REACT_BABEL} for JSX transpilation, and react-native-web ${CDN_URLS.REACT_NATIVE_WEB} for the native primitives (View, Text, TextInput, ScrollView, FlatList, TouchableOpacity, Pressable, StyleSheet, etc.).
+
+IMPORTANT RULES:
+1. ALL JSX must be inside a <script type="text/babel"> block in the HTML body.
+2. Set window.React = React; window.ReactDOM = ReactDOM; at the top of your script so react-native-web can find them.
+3. Use ONLY react-native-web components — do NOT use <div>, <span>, <p>, <button> HTML tags. Use <View>, <Text>, <TextInput>, <TouchableOpacity>, <ScrollView>, <FlatList>, <Image>, <Switch>, etc.
+4. Apply styles via StyleSheet.create() and the style prop. Do NOT use Tailwind or CSS classes on RN components.
+5. The root component must call ReactDOM.createRoot(document.getElementById('root')).render(<App/>).
+6. Make it look like a real mobile app — SafeAreaView, navigation header, list, fab button, etc.
+7. The page must fit a mobile viewport (max-width: 480px, centered on desktop).
+8. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE.`,
+    html: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>React Native Web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8">
+    <script src="${CDN_URLS.REACT}"></script>
+    <script src="${CDN_URLS.REACT_DOM}"></script>
+    <script src="${CDN_URLS.REACT_NATIVE_WEB}"></script>
+    <script src="${CDN_URLS.REACT_BABEL}"></script>
     <style>
-      [v-cloak] { display: none; }
-      body { background-color: #f5f7fa; }
+      body { margin: 0; background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+      #root { display: flex; justify-content: center; min-height: 100vh; }
+      #root > div { width: 100%; max-width: 480px; box-shadow: 0 0 40px rgba(0,0,0,0.4); }
     </style>
   </head>
   <body>
-    <div id="app" v-cloak>
-      <el-config-provider>
-        <div class="container" style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
-          <!-- Element Plus 标题和组件展示 -->
-          <el-card shadow="hover" class="mb-4">
-            <template #header>
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: bold;">Element Plus 组件库</span>
-                <el-tag type="success">v2.9.7</el-tag>
-              </div>
-            </template>
-            
-            <p style="margin-bottom: 20px;">本模板演示了Element Plus常用组件，您可以基于此模板创建优雅的Web应用。</p>
-            
-            <el-divider content-position="left">表单组件展示</el-divider>
-            
-            <el-form :model="form" label-position="top" style="max-width: 460px; margin: 0 auto;">
-              <el-form-item label="姓名">
-                <el-input v-model="form.name" placeholder="请输入姓名">
-                  <template #prefix>
-                    <el-icon><User /></el-icon>
-                  </template>
-                </el-input>
-              </el-form-item>
-              
-              <el-form-item label="选择类型">
-                <el-select v-model="form.type" placeholder="请选择" style="width: 100%;">
-                  <el-option label="选项一" value="1"></el-option>
-                  <el-option label="选项二" value="2"></el-option>
-                  <el-option label="选项三" value="3"></el-option>
-                </el-select>
-              </el-form-item>
-              
-              <el-form-item label="开关">
-                <el-switch v-model="form.active"></el-switch>
-              </el-form-item>
-              
-              <el-form-item label="重要程度">
-                <el-rate v-model="form.rate"></el-rate>
-              </el-form-item>
-              
-              <el-form-item>
-                <el-button type="primary" @click="submitForm">
-                  <el-icon><Check /></el-icon> 提交
-                </el-button>
-                <el-button @click="resetForm">
-                  <el-icon><Refresh /></el-icon> 重置
-                </el-button>
-              </el-form-item>
-            </el-form>
-          </el-card>
-          
-          <div style="text-align: center; margin-top: 30px; color: #909399; font-size: 14px;">
-            请在下方输入提示词，AI将为您生成自定义Element Plus应用
-          </div>
-        </div>
-      </el-config-provider>
-    </div>
+    <div id="root"></div>
+    <script type="text/babel">
+      const React = window.React;
+      const ReactDOM = window.ReactDOM;
+      const RN = window.ReactNativeWeb;
+      const { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, TextInput, FlatList } = RN;
 
-    <script>
-      const { createApp, ref, reactive } = Vue;
-      
-      // 导入Element Plus图标
-      const { 
-        User, 
-        Check, 
-        Refresh
-      } = ElementPlusIconsVue;
-      
-      const App = {
-        setup() {
-          // 表单数据
-          const form = reactive({
-            name: '',
-            type: '',
-            active: false,
-            rate: 3
-          });
-          
-          // 表单方法
-          const submitForm = () => {
-            ElMessage.success('表单提交成功！');
-            console.log('表单数据:', form);
-          };
-          
-          const resetForm = () => {
-            form.name = '';
-            form.type = '';
-            form.active = false;
-            form.rate = 3;
-            ElMessage.info('表单已重置');
-          };
-          
-          return {
-            form,
-            submitForm,
-            resetForm
-          };
-        },
-        components: {
-          User,
-          Check,
-          Refresh
-        }
-      };
-      
-      const app = createApp(App);
-      app.use(ElementPlus);
-      app.mount('#app');
+      function App() {
+        const [items, setItems] = React.useState([
+          { id: '1', title: 'Welcome to RN Web', subtitle: 'Tap to see details' },
+          { id: '2', title: 'Build mobile UIs', subtitle: 'With familiar React' },
+          { id: '3', title: 'Preview on phone', subtitle: 'Use the mobile toggle' },
+        ]);
+        const renderItem = ({ item }) => (
+          <TouchableOpacity style={styles.card} activeOpacity={0.7}>
+            <Text style={styles.cardTitle}>{item.title}</Text>
+            <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+          </TouchableOpacity>
+        );
+        return (
+          <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>My App</Text>
+            </View>
+            <FlatList
+              data={items}
+              renderItem={renderItem}
+              keyExtractor={(i) => i.id}
+              contentContainerStyle={styles.list}
+            />
+          </SafeAreaView>
+        );
+      }
+
+      const styles = StyleSheet.create({
+        container: { flex: 1, backgroundColor: '#0a0a0a' },
+        header: { padding: 18, backgroundColor: '#1a1a1d', borderBottomWidth: 1, borderBottomColor: '#2a2a30' },
+        headerTitle: { color: '#fff', fontSize: 20, fontWeight: '600' },
+        list: { padding: 16 },
+        card: { backgroundColor: '#1a1a1d', padding: 16, borderRadius: 12, marginBottom: 12, borderWidth: 1, borderColor: '#2a2a30' },
+        cardTitle: { color: '#fff', fontSize: 16, fontWeight: '500' },
+        cardSubtitle: { color: '#8a8a93', fontSize: 13, marginTop: 4 },
+      });
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
   </body>
-</html>`
-    },
-    naiveUI: {
-      name: "Vue 3 + Naive UI",
-      description: "Vue 3 框架配合 Naive UI 组件库",
-      systemPrompt: `CREATE A VUE 3 APPLICATION WITH NAIVE UI LIBRARY. Use Vue 3 CDN (${CDN_URLS.VUE}) and Naive UI CDN (${CDN_URLS.NAIVE_UI}). Structure your code with Vue 3 components, reactivity, Naive UI components, and proper Vue syntax. Please write clear and helpful comments in your code to explain the structure and functionality. Follow Naive UI documentation for component usage. Try to elaborate as much as you can, to create something unique and visually appealing. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE`,
-      html: `<!DOCTYPE html>
-  <html>
-    <head>
-      <title>Naive UI 演示</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta charset="utf-8">
-      <script src="${CDN_URLS.VUE}"></script>
-      <script src="${CDN_URLS.NAIVE_UI}"></script>
-      <style>
-        [v-cloak] { display: none; }
-        body { margin: 0; background-color: #f7f9fb; }
-        .n-layout-header { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-      </style>
-    </head>
-    <body>
-      <div id="app" v-cloak>
-        <n-config-provider>
-          <n-layout>
-            <!-- Naive UI 头部导航 -->
-            <n-layout-header bordered style="padding: 12px 24px; height: 60px;">
-              <n-space justify="space-between">
-                <div style="display: flex; align-items: center;">
-                  <n-gradient-text gradient="linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%)" size="24">
-                    Naive UI
-                  </n-gradient-text>
-                </div>
-                <n-space>
-                  <n-button quaternary circle>
-                    <template #icon><n-icon><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"></path></svg></n-icon></template>
-                  </n-button>
-                  <n-button quaternary circle>
-                    <template #icon><n-icon><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m0 16.5c-.83 0-1.5-.67-1.5-1.5h3c0 .83-.67 1.5-1.5 1.5m5-2.5H7v-1l1-1v-2.61C8 9.27 9.03 7.47 11 7v-.5c0-.57.43-1 1-1s1 .43 1 1V7c1.97.47 3 2.28 3 4.39V14l1 1z"></path></svg></n-icon></template>
-                  </n-button>
-                </n-space>
-              </n-space>
-            </n-layout-header>
-            
-            <!-- 主要内容区域 -->
-            <n-layout-content style="padding: 32px 24px;">
-              <div style="max-width: 800px; margin: 0 auto;">
-                <n-card title="Naive UI 组件展示" size="medium">
-                  <n-space vertical size="large">
-                    <div>
-                      <n-alert type="info" title="关于本模板" style="margin-bottom: 20px;">
-                        这是一个Naive UI组件库演示模板，展示了一些常用组件和功能。
-                      </n-alert>
-                      
-                      <n-divider>主题切换</n-divider>
-                      
-                      <n-space align="center" justify="center" style="margin-bottom: 24px;">
-                        <n-text>选择主题：</n-text>
-                        <n-switch v-model:value="darkMode">
-                          <template #checked>深色</template>
-                          <template #unchecked>浅色</template>
-                        </n-switch>
-                      </n-space>
-                      
-                      <n-divider>数据输入</n-divider>
-                      
-                      <n-form label-placement="left" label-width="100">
-                        <n-form-item label="任务名称">
-                          <n-input v-model:value="taskName" placeholder="请输入任务名称" />
-                        </n-form-item>
-                        
-                        <n-form-item label="优先级">
-                          <n-slider v-model:value="priority" :step="1" :min="1" :max="5" :tooltip="false" />
-                          <n-space style="margin-top: 6px;">
-                            <n-tag v-for="n in 5" :key="n" :type="priority >= n ? 'success' : 'default'">
-                              {{ n }}
-                            </n-tag>
-                          </n-space>
-                        </n-form-item>
-                        
-                        <n-form-item label="截止日期">
-                          <n-date-picker v-model:value="date" type="date" style="width: 100%;" />
-                        </n-form-item>
-                        
-                        <n-space justify="end">
-                          <n-button @click="resetForm">重置</n-button>
-                          <n-button type="primary" @click="submitForm">提交</n-button>
-                        </n-space>
-                      </n-form>
-                    </div>
-                  </n-space>
-                </n-card>
-                
-                <div style="text-align: center; margin-top: 32px; color: #8a9099; font-size: 14px;">
-                  请在下方输入提示词，AI将为您生成自定义Naive UI应用
-                </div>
-              </div>
-            </n-layout-content>
-          </n-layout>
-        </n-config-provider>
+</html>`,
+  },
+
+  "material-android": {
+    name: "Material 3 (Android-style)",
+    description: "Material Design 3 web components — Android-native look and feel.",
+    systemPrompt: `Create a Material 3 (Material You) styled web page using @material/web components (${CDN_URLS.MATERIAL_WEB}) and Material Symbols Outlined icons (${CDN_URLS.MATERIAL_TYPOGRAPHY}). The result should look like a native Android app screen.
+
+RULES:
+1. Import @material/web/all.min.js as a module: <script type="module" src="${CDN_URLS.MATERIAL_WEB}"></script>
+2. Use Material 3 color tokens: a vibrant primary, surface tones, on-surface text. Suggest using a dark surface (#1C1B1F) with a purple/teal primary accent (#6750A4 default M3 baseline).
+3. Use custom element names: <md-filled-button>, <md-outlined-button>, <md-text-field>, <md-checkbox>, <md-switch>, <md-list>, <md-fab>, <md-icon-button>, <md-icon>symbol_name</md-icon>.
+4. Apply Material 3 typography (Roboto), corner radius (12-28px), elevation via box-shadow.
+5. Include an Android-style top app bar with title + actions, a scrollable content area, and a FAB in the bottom-right.
+6. The viewport should be constrained to a mobile width (max 480px, centered on desktop).
+7. Use TailwindCSS (${CDN_URLS.TAILWIND}) only for layout utilities — component styling should be Material-flavoured custom CSS.
+8. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE.`,
+    html: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Material 3 Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="${CDN_URLS.MATERIAL_TYPOGRAPHY}">
+    <script src="${CDN_URLS.TAILWIND}"></script>
+    <script type="module" src="${CDN_URLS.MATERIAL_WEB}"></script>
+    <style>
+      body { margin: 0; background: #141318; font-family: 'Roboto', system-ui, sans-serif; color: #E6E1E5; }
+      #app { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #141318; box-shadow: 0 0 40px rgba(0,0,0,0.4); }
+      .top-bar { padding: 16px 20px; background: #1C1B1F; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2A2730; position: sticky; top: 0; z-index: 10; }
+      .top-bar h1 { font-size: 20px; font-weight: 500; margin: 0; color: #E6E1E5; }
+      .content { padding: 20px; }
+      .card { background: #211F26; border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid #2A2730; }
+      .card h2 { font-size: 18px; font-weight: 500; margin: 0 0 8px; color: #E6E1E5; }
+      .card p { font-size: 14px; color: #CAC4D0; margin: 0; line-height: 1.5; }
+      md-filled-button { --md-filled-button-container-color: #6750A4; --md-filled-button-label-text-color: #fff; }
+      md-fab { --md-fab-container-color: #6750A4; --md-fab-icon-color: #fff; position: fixed; bottom: 24px; right: max(24px, calc(50vw - 240px + 24px)); }
+      .icon-btn { color: #CAC4D0; }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="top-bar">
+        <h1>Material 3</h1>
+        <md-icon-button class="icon-btn"><md-icon>more_vert</md-icon></md-icon-button>
       </div>
-  
-      <script>
-        const { createApp, ref, reactive, computed } = Vue;
-        
-        const App = {
-          setup() {
-            // 主题切换
-            const darkMode = ref(false);
-            
-            // 表单数据
-            const taskName = ref('');
-            const priority = ref(3);
-            const date = ref(Date.now());
-            
-            // 表单方法
-            const resetForm = () => {
-              taskName.value = '';
-              priority.value = 3;
-              date.value = Date.now();
-              window.$message.info('表单已重置');
-            };
-            
-            const submitForm = () => {
-              if (!taskName.value) {
-                window.$message.error('请输入任务名称');
-                return;
-              }
-              window.$message.success('表单提交成功');
-              console.log('表单数据:', {
-                taskName: taskName.value,
-                priority: priority.value,
-                date: date.value
-              });
-            };
-            
-            return {
-              darkMode,
-              taskName,
-              priority,
-              date,
-              resetForm,
-              submitForm
-            };
-          }
-        };
-        
-        const app = createApp(App);
-        app.use(naive);
-        app.mount('#app');
-      </script>
-    </body>
-  </html>`
-    },
-  };
-  
-  export { TEMPLATES, CDN_URLS };
+      <div class="content">
+        <div class="card">
+          <h2>Welcome to Material 3</h2>
+          <p>This UI uses @material/web components with the Material You baseline color scheme.</p>
+          <md-filled-button style="margin-top: 12px;">
+            <md-icon slot="icon">add</md-icon>
+            Get Started
+          </md-filled-button>
+        </div>
+        <div class="card">
+          <h2>Components</h2>
+          <p>Filled buttons, outlined fields, switches, and FABs are all available.</p>
+        </div>
+      </div>
+      <md-fab><md-icon>add</md-icon></md-fab>
+    </div>
+  </body>
+</html>`,
+  },
+
+  // ---------- Full-Stack (multi-file project mode) ----------
+  "nextjs-fullstack": {
+    name: "Next.js Full-Stack",
+    description: "Multi-file project: Next.js app with API routes. Preview shows a stitched-together HTML demo; full source available in editor tabs.",
+    systemPrompt: `You are building a Next.js full-stack application. The user wants a complete multi-file project.
+
+OUTPUT FORMAT — CRITICAL:
+You MUST wrap every file in markers exactly like this:
+
+<!--file:app/layout.tsx-->
+\`\`\`tsx
+// file content
+\`\`\`
+<!--/file-->
+
+<!--file:app/page.tsx-->
+\`\`\`tsx
+// file content
+\`\`\`
+<!--/file-->
+
+<!--file:app/api/hello/route.ts-->
+\`\`\`ts
+// file content
+\`\`\`
+<!--/file-->
+
+Rules:
+1. Use the Next.js 14 App Router conventions (app/ directory, server components, route handlers).
+2. Include at minimum: app/layout.tsx, app/page.tsx, app/globals.css, and at least one API route under app/api/.
+3. Include package.json with the necessary dependencies.
+4. Include a README.md with run instructions.
+5. At the END of your response, after all file blocks, include ONE compiled HTML preview that demonstrates the UI by stitching together the page.tsx output as plain HTML + TailwindCSS via CDN. This preview must start with <!DOCTYPE html> and end with </html>. The preview should call the API route via a fetch() to a mock endpoint defined inline.
+6. Use TailwindCSS for styling in the preview and in app/globals.css.
+7. Make the demo realistic — show loading states, error handling, and at least one interactive element.
+
+Always include the file markers exactly as shown. The frontend will parse them and show each file in its own editor tab.`,
+    html: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Next.js Full-Stack Preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <script src="${CDN_URLS.TAILWIND}"></script>
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-screen p-8">
+    <main class="max-w-2xl mx-auto">
+      <h1 class="text-3xl font-bold mb-2">Next.js Full-Stack</h1>
+      <p class="text-zinc-400 mb-6">Project initialized. Describe what you want to build in the chat — files will appear in the explorer as the model streams them.</p>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+        <div class="text-xs text-zinc-500 uppercase tracking-wider mb-1">API Route</div>
+        <code class="text-emerald-400 font-mono text-sm">/api/hello → { "message": "Hello, world!" }</code>
+      </div>
+    </main>
+  </body>
+</html>`,
+  },
+
+  "express-react": {
+    name: "Express + React",
+    description: "Multi-file project: Express backend + React frontend. Multi-file project mode with editor tabs.",
+    systemPrompt: `You are building a full-stack app: an Express.js backend serving a React frontend.
+
+OUTPUT FORMAT — CRITICAL:
+Wrap every file in markers exactly like this:
+
+<!--file:server/index.js-->
+\`\`\`js
+// file content
+\`\`\`
+<!--/file-->
+
+<!--file:client/App.jsx-->
+\`\`\`jsx
+// file content
+\`\`\`
+<!--/file-->
+
+<!--file:package.json-->
+\`\`\`json
+{ }
+\`\`\`
+<!--/file-->
+
+Rules:
+1. Include: server/index.js (Express with at least 2 API routes), client/App.jsx (root React component), client/main.jsx (entry), client/index.html, server/routes/ (with at least one router file), package.json, README.md.
+2. Use Vite for the frontend dev server config OR use a single bundled HTML — but every file must be its own file block.
+3. At the END, include ONE compiled HTML preview starting with <!DOCTYPE html>. This preview must:
+   - Import React + ReactDOM + Babel standalone CDNs.
+   - Embed the React component inline as <script type="text/babel">.
+   - Mock the Express API responses with a small fetch() interceptor.
+   - Demonstrate the UI: data fetching, loading state, and at least one interaction.
+4. Use TailwindCSS (${CDN_URLS.TAILWIND}) for styling.
+
+Always include the file markers exactly as shown.`,
+    html: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Express + React Preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <script src="${CDN_URLS.TAILWIND}"></script>
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-screen p-8">
+    <main class="max-w-2xl mx-auto">
+      <h1 class="text-3xl font-bold mb-2">Express + React</h1>
+      <p class="text-zinc-400 mb-6">Multi-file project initialized. Describe your app in the chat.</p>
+    </main>
+  </body>
+</html>`,
+  },
+
+  "mern-stack": {
+    name: "MERN Stack",
+    description: "Multi-file project: MongoDB + Express + React + Node. Full MERN scaffold.",
+    systemPrompt: `You are building a MERN-stack application (MongoDB + Express + React + Node).
+
+OUTPUT FORMAT — CRITICAL:
+Wrap every file in markers exactly like this:
+
+<!--file:server/models/Item.js-->
+\`\`\`js
+// file content
+\`\`\`
+<!--/file-->
+
+Rules:
+1. Include:
+   - server/server.js (Express app entry, Mongoose connection)
+   - server/models/<Name>.js (at least one Mongoose model)
+   - server/routes/<name>.js (REST CRUD routes)
+   - server/controllers/<name>.js (controllers)
+   - client/src/App.jsx (React UI consuming the REST API)
+   - client/src/main.jsx (entry)
+   - client/index.html
+   - .env.example
+   - package.json (with concurrently script for both server and client)
+   - README.md (with setup, env vars, and run commands)
+2. At the END, include ONE compiled HTML preview starting with <!DOCTYPE html>. This preview must:
+   - Import React + ReactDOM + Babel CDNs.
+   - Render the React UI inline.
+   - Mock the Mongoose/Express REST API with fetch() interceptors returning realistic data.
+   - Show a CRUD demo (list, create, update, delete).
+3. Use TailwindCSS (${CDN_URLS.TAILWIND}) for styling.
+
+Always include the file markers exactly as shown.`,
+    html: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>MERN Stack Preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <script src="${CDN_URLS.TAILWIND}"></script>
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-screen p-8">
+    <main class="max-w-2xl mx-auto">
+      <h1 class="text-3xl font-bold mb-2">MERN Stack</h1>
+      <p class="text-zinc-400 mb-6">Multi-file project initialized. Describe your app in the chat.</p>
+    </main>
+  </body>
+</html>`,
+  },
+};
+
+export { TEMPLATES, CDN_URLS };

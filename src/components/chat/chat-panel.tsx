@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
@@ -10,6 +10,7 @@ import {
   TbLoader2,
   TbSparkles,
   TbTool,
+  TbBolt,
 } from "react-icons/tb";
 import { useChatStore, ChatMessage } from "../../store/chatStore";
 import { useProvidersStore } from "../../store/providersStore";
@@ -25,7 +26,7 @@ interface ChatPanelProps {
   language: string;
   maxTokens: number;
   temperature: number;
-  onStreamingUpdate: (html: string) => void; // live updates during stream
+  onStreamingUpdate: (html: string) => void;
   pendingClone: { url: string } | null;
   clearPendingClone: () => void;
 }
@@ -46,19 +47,20 @@ export default function ChatPanel(props: ChatPanelProps) {
   } = useChatStore();
   const { providers, current, configs } = useProvidersStore();
   const { enabledTools } = useMcpStore();
-  const { active: activeSkills } = useSkillsStore();
+  const { skills, active: activeSkills, toggle } = useSkillsStore();
   const [input, setInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [slashOpen, setSlashOpen] = useState(false);
+  const [slashIndex, setSlashIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-scroll to bottom on new content
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // If a clone request is pending, kick it off automatically
   useEffect(() => {
     if (props.pendingClone) {
       runClone(props.pendingClone.url);
@@ -71,10 +73,94 @@ export default function ChatPanel(props: ChatPanelProps) {
   const activeSkillCount = activeSkills.length;
   const activeToolCount = enabledTools.length;
 
+  // Build slash menu items — active skills + available skills + special commands
+  const slashItems = useMemo(() => {
+    const items: { id: string; name: string; desc: string; cmd: string }[] = [];
+    for (const s of skills) {
+      items.push({
+        id: s.id,
+        name: s.name,
+        desc: s.description,
+        cmd: `/${s.id}`,
+      });
+    }
+    items.push({
+      id: "__clone",
+      name: "Clone Website",
+      desc: "Switch to clone mode and enter a URL",
+      cmd: "/clone",
+    });
+    items.push({
+      id: "__clear",
+      name: "Clear Chat",
+      desc: "Reset conversation history",
+      cmd: "/clear",
+    });
+    return items;
+  }, [skills]);
+
+  // Detect `/` at start of input → open menu
+  useEffect(() => {
+    const v = input.trim();
+    if (v.startsWith("/") && !v.includes(" ") && v.length <= 32) {
+      setSlashOpen(true);
+      setSlashIndex(0);
+    } else {
+      setSlashOpen(false);
+    }
+  }, [input]);
+
+  const filteredSlash = useMemo(() => {
+    const q = input.trim().toLowerCase();
+    if (!q.startsWith("/")) return slashItems;
+    return slashItems.filter(
+      (i) =>
+        i.id.toLowerCase().includes(q.slice(1)) ||
+        i.name.toLowerCase().includes(q.slice(1))
+    );
+  }, [input, slashItems]);
+
+  const applySlash = (item: (typeof slashItems)[number]) => {
+    if (item.id === "__clear") {
+      clear();
+      props.setPreviousPrompt("");
+      setInput("");
+      setSlashOpen(false);
+      return;
+    }
+    if (item.id === "__clone") {
+      setInput("/clone ");
+      setSlashOpen(false);
+      return;
+    }
+    // Activate the skill if not already active
+    if (!activeSkills.includes(item.id)) toggle(item.id);
+    toast.success(`Skill active: ${item.name}`);
+    setInput("");
+    setSlashOpen(false);
+    inputRef.current?.focus();
+  };
+
   const send = async () => {
     if (isWorking || !input.trim()) return;
     const text = input.trim();
     setInput("");
+    setSlashOpen(false);
+
+    // Handle special /clone command
+    if (text.startsWith("/clone ")) {
+      const url = text.slice("/clone ".length).trim();
+      if (url) {
+        runClone(url);
+        return;
+      }
+    }
+    if (text === "/clear") {
+      clear();
+      props.setPreviousPrompt("");
+      return;
+    }
+
     await runChat(text);
   };
 
@@ -130,7 +216,6 @@ export default function ChatPanel(props: ChatPanelProps) {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
-        // Detect MCP tool events
         const mcpMatch = chunk.match(/<!--mcp:(\{[\s\S]*?\})-->/);
         if (mcpMatch) {
           try {
@@ -145,13 +230,11 @@ export default function ChatPanel(props: ChatPanelProps) {
               toolServer: info.server,
             });
           } catch {}
-          // strip out the marker so it doesn't go into HTML
           const cleaned = chunk.replace(/<!--mcp:\{[\s\S]*?\}-->/g, "");
           contentResponse += cleaned;
           appendToMessage(assistantId, cleaned);
           continue;
         }
-        // Strip error markers
         const errMatch = chunk.match(/^\[error\] (.+)$/m);
         if (errMatch) {
           toast.error(errMatch[1]);
@@ -159,17 +242,12 @@ export default function ChatPanel(props: ChatPanelProps) {
         }
         contentResponse += chunk;
         appendToMessage(assistantId, chunk);
-        // Live-update preview
         const finalDoc = contentResponse.match(/<!DOCTYPE html>[\s\S]*<\/html>/)?.[0];
-        if (finalDoc) {
-          props.onStreamingUpdate(finalDoc);
-        }
+        if (finalDoc) props.onStreamingUpdate(finalDoc);
       }
-      // Try to extract the final HTML
       const finalDoc = contentResponse.match(/<!DOCTYPE html>[\s\S]*<\/html>/)?.[0];
       if (finalDoc) {
         props.setHtml(finalDoc);
-        // Update the assistant message to embed the HTML
         useChatStore.setState((state: any) => ({
           messages: state.messages.map((m: any) =>
             m.id === assistantId ? { ...m, html: finalDoc } : m
@@ -183,11 +261,8 @@ export default function ChatPanel(props: ChatPanelProps) {
       }
       props.setPreviousPrompt(prompt);
     } catch (e: any) {
-      if (e.name === "AbortError") {
-        toast.info("Stopped");
-      } else {
-        toast.error(e.message || t("errors.aiRequestFailed"));
-      }
+      if (e.name === "AbortError") toast.info("Stopped");
+      else toast.error(e.message || t("errors.aiRequestFailed"));
     } finally {
       setWorking(false, null);
     }
@@ -199,7 +274,7 @@ export default function ChatPanel(props: ChatPanelProps) {
     const userMsg: ChatMessage = {
       id: genId(),
       role: "user",
-      content: `🌐 Clone: ${url}`,
+      content: `Clone: ${url}`,
       timestamp: Date.now(),
     };
     addMessage(userMsg);
@@ -286,128 +361,181 @@ export default function ChatPanel(props: ChatPanelProps) {
     setTimeout(() => setCopiedId(null), 1500);
   };
 
+  const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (slashOpen && filteredSlash.length > 0) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSlashIndex((i) => (i + 1) % filteredSlash.length);
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSlashIndex((i) => (i - 1 + filteredSlash.length) % filteredSlash.length);
+        return;
+      }
+      if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        applySlash(filteredSlash[slashIndex]);
+        return;
+      }
+      if (e.key === "Escape") {
+        setSlashOpen(false);
+        return;
+      }
+    }
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full bg-[#1e1e1e] border-l border-[#1e1e1e]">
+    <div className="flex flex-col h-full" style={{ background: "var(--bg)", borderLeft: "1px solid var(--border)" }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#2d2d30]">
-        <div className="flex items-center gap-2 text-white text-sm font-medium">
-          <TbSparkles size={18} className="text-indigo-400" />
-          {t("askAI.title")}
+      <div className="flex items-center justify-between px-4 h-12 flex-none" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div className="flex items-center gap-2 text-sm font-medium">
+          <TbSparkles size={16} style={{ color: "var(--text-muted)" }} />
+          <span>{t("askAI.title")}</span>
         </div>
-        <button
-          onClick={newChat}
-          className="flex items-center gap-1 text-xs text-[#9a9a9a] hover:text-white bg-[#2d2d2d] hover:bg-[#3c3c3c] px-2 py-1 rounded"
-        >
+        <button onClick={newChat} className="btn btn-ghost">
           <TbPlus size={14} />
-          {t("chat.newChat")}
+          <span className="text-xs">{t("chat.newChat")}</span>
         </button>
       </div>
 
       {/* Status badges */}
-      <div className="flex items-center gap-2 px-4 py-2 text-[11px] text-[#9a9a9a] border-b border-[#2d2d30]">
-        <span className="px-2 py-0.5 rounded bg-[#2d2d2d] border border-[#3c3c3c]">
+      <div className="flex items-center gap-2 px-4 py-2 text-[11px] flex-none" style={{ borderBottom: "1px solid var(--border)" }}>
+        <span className="badge">
           {provider?.name || "..."} · {cfg.model || "?"}
         </span>
         {activeSkillCount > 0 && (
-          <span className="px-2 py-0.5 rounded bg-indigo-900/40 text-indigo-300 border border-indigo-700/50">
-            {activeSkillCount} {t("chat.skills")}
+          <span className="badge flex items-center gap-1" style={{ color: "var(--text)", borderColor: "var(--border-strong)" }}>
+            <TbBolt size={11} /> {activeSkillCount} {t("chat.skills")}
           </span>
         )}
         {activeToolCount > 0 && (
-          <span className="px-2 py-0.5 rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700/50 flex items-center gap-1">
+          <span className="badge flex items-center gap-1" style={{ color: "var(--success)" }}>
             <TbTool size={11} /> {activeToolCount} {t("chat.tools")}
           </span>
         )}
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-        {messages.length === 0 && (
-          <div className="text-center text-[#7a7a7a] mt-12 px-4">
-            <TbSparkles size={32} className="mx-auto mb-3 text-indigo-400" />
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-6">
+        {messages.length === 0 ? (
+          <div className="empty-state">
+            <div className="icon">
+              <TbSparkles size={28} className="mx-auto" />
+            </div>
             <div className="text-sm">{t("askAI.placeholder")}</div>
+            <div className="text-xs mt-2" style={{ color: "var(--text-dim)" }}>
+              Type <code style={{ background: "var(--bg-elevated)", padding: "1px 6px", borderRadius: 4, border: "1px solid var(--border)", fontFamily: "var(--font-code, monospace)" }}>/</code> to browse skills
+            </div>
+          </div>
+        ) : (
+          <div className="chat-container">
+            {messages.map((m: ChatMessage) => {
+              if (m.isToolEvent) {
+                return (
+                  <div key={m.id} className="animate-fade-in-up">
+                    <div className="tool-chip">
+                      <TbTool size={12} />
+                      <span className="tool-server">{m.toolServer}</span>
+                      <span style={{ color: "var(--text-dim)" }}>/</span>
+                      <span style={{ color: "var(--text)" }}>{m.toolName}</span>
+                    </div>
+                  </div>
+                );
+              }
+              if (m.role === "user") {
+                return (
+                  <div key={m.id} className="chat-message chat-message-user animate-fade-in-up">
+                    <div className="chat-role-label">You</div>
+                    <div className="chat-content chat-content-user">{m.content}</div>
+                  </div>
+                );
+              }
+              const preview = (m.html || m.content || "").replace(/<[^>]+>/g, "").slice(0, 280);
+              const isLastAssistant = isWorking && m.id === messages[messages.length - 1]?.id;
+              return (
+                <div key={m.id} className="chat-message chat-message-assistant animate-fade-in-up">
+                  <div className="chat-role-label">Assistant</div>
+                  <div className={`chat-content chat-content-assistant ${isLastAssistant ? "chat-cursor" : ""}`}>
+                    {preview || (isWorking ? "" : "(empty)")}
+                  </div>
+                  {m.html && (
+                    <button
+                      onClick={() => copyMsg(m)}
+                      className="btn btn-ghost mt-1"
+                      style={{ padding: "4px 8px", fontSize: 11 }}
+                    >
+                      {copiedId === m.id ? <TbCheck size={12} /> : <TbCopy size={12} />}
+                      <span>{copiedId === m.id ? t("chat.copied") : t("chat.copy")}</span>
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
-        {messages.map((m: ChatMessage) => {
-          if (m.isToolEvent) {
-            return (
-              <div key={m.id} className="animate-fade-in-up">
-                <div className="tool-chip">
-                  <TbTool size={12} />
-                  <span className="text-emerald-300">{m.toolServer}</span>
-                  <span className="text-[#8a8a8a]">/</span>
-                  <span className="text-white">{m.toolName}</span>
-                </div>
-              </div>
-            );
-          }
-          if (m.role === "user") {
-            return (
-              <div key={m.id} className="flex justify-end animate-fade-in-up">
-                <div className="chat-bubble chat-bubble-user">{m.content}</div>
-              </div>
-            );
-          }
-          // assistant message: show a short preview (truncated), with copy + view
-          const preview = (m.html || m.content || "").replace(/<[^>]+>/g, "").slice(0, 200);
-          return (
-            <div key={m.id} className="flex flex-col items-start gap-1 animate-fade-in-up">
-              <div
-                className={`chat-bubble chat-bubble-assistant ${isWorking && m.id === messages[messages.length - 1]?.id ? "chat-cursor" : ""}`}
-              >
-                {preview || (isWorking ? "" : "(empty)")}
-                {m.html && (
-                  <button
-                    onClick={() => copyMsg(m)}
-                    className="absolute -bottom-3 right-2 text-[#9a9a9a] hover:text-white text-xs flex items-center gap-1 bg-[#252526] border border-[#3c3c3c] rounded-full px-2 py-0.5"
-                  >
-                    {copiedId === m.id ? <TbCheck size={11} /> : <TbCopy size={11} />}
-                    {copiedId === m.id ? t("chat.copied") : t("chat.copy")}
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
       </div>
 
       {/* Input area */}
-      <div className="border-t border-[#2d2d30] p-3">
-        <div className="bg-[#252526] border border-[#3c3c3c] rounded-lg focus-within:border-indigo-500">
+      <div className="p-3 flex-none relative" style={{ borderTop: "1px solid var(--border)" }}>
+        {slashOpen && filteredSlash.length > 0 && (
+          <div className="slash-menu">
+            {filteredSlash.map((item, idx) => (
+              <div
+                key={item.id}
+                className={`slash-menu-item ${idx === slashIndex ? "selected" : ""}`}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  applySlash(item);
+                }}
+                onMouseEnter={() => setSlashIndex(idx)}
+              >
+                <div className="slash-icon">
+                  {item.id === "__clone" ? <TbSparkles size={14} /> : <TbBolt size={14} />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="slash-name">
+                    {item.name} <span className="cmd">{item.cmd}</span>
+                  </div>
+                  <div className="slash-desc">{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="input-bar">
           <textarea
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send();
-              }
-            }}
+            onKeyDown={onKeyDown}
             placeholder={t("chat.placeholder")}
             rows={3}
-            className="w-full bg-transparent text-white text-sm px-3 py-2 resize-none focus:outline-none"
+            className="w-full bg-transparent text-sm px-3 py-2 resize-none focus:outline-none"
+            style={{ color: "var(--text)" }}
             disabled={isWorking}
           />
           <div className="flex items-center justify-between px-3 pb-2">
-            <div className="text-[11px] text-[#7a7a7a]">
+            <div className="text-[11px]" style={{ color: "var(--text-dim)" }}>
               {provider?.name} · {cfg.model || "?"}
             </div>
             {isWorking ? (
-              <button
-                onClick={stop}
-                className="flex items-center gap-1 text-sm bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg"
-              >
-                <TbSquare size={14} />
-                {t("chat.stop")}
+              <button onClick={stop} className="btn btn-danger">
+                <TbSquare size={12} />
+                <span>{t("chat.stop")}</span>
               </button>
             ) : (
               <button
                 onClick={send}
                 disabled={!input.trim()}
-                className="flex items-center gap-1 text-sm bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded-lg"
+                className="btn btn-primary"
               >
-                {input.trim() ? <TbSend size={14} /> : <TbLoader2 size={14} />}
-                {t("chat.send")}
+                {input.trim() ? <TbSend size={12} /> : <TbLoader2 size={12} />}
+                <span>{t("chat.send")}</span>
               </button>
             )}
           </div>
