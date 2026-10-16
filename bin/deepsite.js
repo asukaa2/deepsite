@@ -109,10 +109,12 @@ function hasDist() {
 
 function hasBuildDeps() {
   // vite and tsc must be installed (they're devDependencies, so npm i -g
-  // github:... does NOT install them by default).
+  // github:... does NOT install them by default). We also check for
+  // @types/react-dom because the build (tsc -b) will fail without it.
   return (
     existsSync(path.join(PKG_ROOT, "node_modules", ".bin", "vite")) &&
-    existsSync(path.join(PKG_ROOT, "node_modules", ".bin", "tsc"))
+    existsSync(path.join(PKG_ROOT, "node_modules", ".bin", "tsc")) &&
+    existsSync(path.join(PKG_ROOT, "node_modules", "@types", "react-dom"))
   );
 }
 
@@ -120,13 +122,25 @@ function ensureBuildDeps() {
   if (hasBuildDeps()) return;
   console.log("[deepsite] Build dependencies (vite, tsc) not found.");
   console.log("[deepsite] Installing devDependencies in the package directory…");
+  // Use --ignore-scripts to skip postinstall scripts (esbuild's postinstall
+  // fails on some platforms — e.g. Termux on Android — with `spawn sh ENOENT`
+  // because npm's script-runner can't find sh in its sanitized PATH.
+  //
+  // Modern esbuild (>=0.20) uses optionalDependencies for the platform-specific
+  // binary (@esbuild/linux-x64, @esbuild/android-arm64, etc.) and the JS
+  // wrapper resolves it via require.resolve() at runtime — so the postinstall
+  // is NOT needed.
+  //
+  // Vite, tsc, @vitejs/plugin-react, tailwindcss — none of them need a
+  // postinstall script either. So --ignore-scripts is safe here.
   const result = spawnSync(
     process.platform === "win32" ? "npm.cmd" : "npm",
-    ["install", "--include=dev"],
+    ["install", "--include=dev", "--ignore-scripts"],
     { cwd: PKG_ROOT, stdio: "inherit" }
   );
   if (result.status !== 0) {
     console.error("[deepsite] Failed to install build dependencies.");
+    console.error("[deepsite] Try manually: cd " + PKG_ROOT + " && npm install --include=dev --ignore-scripts");
     process.exit(result.status ?? 1);
   }
   console.log("[deepsite] Build dependencies installed.");

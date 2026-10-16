@@ -103,5 +103,21 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "typescript-eslint": "^8.24.1"
+  },
+  "optionalDependencies": {
+    "@esbuild/android-arm64": "^0.25.0",
+    "@esbuild/android-arm": "^0.25.0",
+    "@esbuild/linux-x64": "^0.25.0",
+    "@esbuild/linux-arm64": "^0.25.0",
+    "@esbuild/linux-arm": "^0.25.0",
+    "@esbuild/darwin-x64": "^0.25.0",
+    "@esbuild/darwin-arm64": "^0.25.0",
+    "@esbuild/win32-x64": "^0.25.0",
+    "@rollup/rollup-android-arm64": "^4.0.0",
+    "@rollup/rollup-linux-x64-gnu": "^4.0.0",
+    "@rollup/rollup-linux-arm64-gnu": "^4.0.0",
+    "@rollup/rollup-darwin-x64": "^4.0.0",
+    "@rollup/rollup-darwin-arm64": "^4.0.0",
+    "@rollup/rollup-win32-x64": "^4.0.0"
   }
 }

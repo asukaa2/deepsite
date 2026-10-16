@@ -69,9 +69,8 @@ server.js                   # Express: /api/providers, /api/providers/custom, /a
 
 ```bash
 npm i -g deepsite@github:asukaa2/deepsite
-# The `prepare` script builds the frontend automatically during install.
 
-deepsite                    # → http://localhost:3000  (auto-builds on first run if needed)
+deepsite                    # → http://localhost:3000  (auto-builds on first run)
 deepsite --port 8080        # → http://localhost:8080
 deepsite --host 0.0.0.0     # → bind to all interfaces
 deepsite dev                # → Vite dev + Express API (live reload, port 5173 + 3000)
@@ -91,12 +90,35 @@ DEEPSEEK_API_KEY=... deepsite
 
 The CLI persists user data (custom providers, custom models, MCP config) to `./data/` in your current working directory — so each project you run `deepsite` from has its own config.
 
+#### Android / Termux install
+
+On Termux, esbuild's postinstall script fails because npm's script-runner can't find `sh` in its sanitized PATH (`spawn sh ENOENT`). Modern esbuild doesn't need the postinstall (it uses optionalDependencies for the platform binary), so install with `--ignore-scripts`:
+
+```bash
+# Termux (Android) — skip postinstall scripts:
+npm i -g deepsite@github:asukaa2/deepsite --ignore-scripts
+
+# Then run as normal — the CLI auto-installs devDeps (also with --ignore-scripts)
+# and builds the frontend on first run:
+deepsite
+```
+
+If the auto-build inside the CLI still hits an esbuild issue, run manually:
+
+```bash
+cd $(npm root -g)/deepsite
+npm install --include=dev --ignore-scripts
+deepsite build
+deepsite
+```
+
 ### Run from source (development)
 
 ```bash
 git clone https://github.com/asukaa2/deepsite.git
 cd deepsite
-npm install                 # also runs `prepare` → builds dist/
+npm install                 # installs runtime + dev deps
+npm run build               # builds dist/ (tsc + vite)
 npm run start:dev           # → Vite on http://localhost:5173 + Express API on http://localhost:3000
 ```
 
