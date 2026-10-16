@@ -109,9 +109,11 @@ function hasDist() {
 
 function runBuild() {
   console.log("[deepsite] Building frontend (this may take ~30s)…");
+  // Use build:bundle (vite only) instead of build (tsc + vite) so it works
+  // even when TypeScript is not on PATH (e.g. fresh global install).
   const result = spawnSync(
     process.platform === "win32" ? "npm.cmd" : "npm",
-    ["run", "build"],
+    ["run", "build:bundle"],
     { cwd: PKG_ROOT, stdio: "inherit" }
   );
   if (result.status !== 0) {

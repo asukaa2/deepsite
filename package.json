@@ -53,12 +53,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:bundle": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "node server.js",
     "start:dev": "concurrently \"npm run dev\" \"npm run start\"",
     "vercel-build": "npm run build",
-    "prepare": "npm run build"
+    "prepare": "npm run build:bundle"
   },
   "engines": {
     "node": ">=18.0.0"
