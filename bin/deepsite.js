@@ -107,10 +107,34 @@ function hasDist() {
   return existsSync(path.join(PKG_ROOT, "dist", "index.html"));
 }
 
+function hasBuildDeps() {
+  // vite and tsc must be installed (they're devDependencies, so npm i -g
+  // github:... does NOT install them by default).
+  return (
+    existsSync(path.join(PKG_ROOT, "node_modules", ".bin", "vite")) &&
+    existsSync(path.join(PKG_ROOT, "node_modules", ".bin", "tsc"))
+  );
+}
+
+function ensureBuildDeps() {
+  if (hasBuildDeps()) return;
+  console.log("[deepsite] Build dependencies (vite, tsc) not found.");
+  console.log("[deepsite] Installing devDependencies in the package directory…");
+  const result = spawnSync(
+    process.platform === "win32" ? "npm.cmd" : "npm",
+    ["install", "--include=dev"],
+    { cwd: PKG_ROOT, stdio: "inherit" }
+  );
+  if (result.status !== 0) {
+    console.error("[deepsite] Failed to install build dependencies.");
+    process.exit(result.status ?? 1);
+  }
+  console.log("[deepsite] Build dependencies installed.");
+}
+
 function runBuild() {
+  ensureBuildDeps();
   console.log("[deepsite] Building frontend (this may take ~30s)…");
-  // Build = tsc -b && vite build. tsc + vite are in dependencies (not
-  // devDependencies) so this works on fresh global installs.
   const result = spawnSync(
     process.platform === "win32" ? "npm.cmd" : "npm",
     ["run", "build"],
